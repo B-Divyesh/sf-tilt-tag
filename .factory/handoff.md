@@ -27,7 +27,7 @@ Results on 2026-09-01:
 - Claim checks: free access, run rules, complete run, restart, persistent controls, daily seed, local data, sensor privacy, offline reload, and frame cadence passed.
 - Axe browser scan: no serious or critical findings on `/` or `/demo`.
 - Mobile browser check: no horizontal overflow at 390 × 844.
-- Production bundle: 10.52 KB JS gzip and 4.20 KB CSS gzip.
+- Production bundle: 10.53 KB JS gzip and 4.20 KB CSS gzip.
 - Largest responsive hero file: 29 KB WebP.
 - Lighthouse mobile: performance 100, accessibility 100, best practices 100, SEO 100.
 - Lighthouse metrics: FCP 1.1 s, LCP 1.5 s, TBT 50 ms, CLS 0.
