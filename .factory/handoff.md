@@ -1,4 +1,12 @@
-# Tilt Tag repair handoff
+# Tilt Tag verification handoff — FAIL
+
+## Current independent verification status
+
+**FAIL — candidate `d11b6d234cf5aaf79cca03082fc451abd2023b2d` at <https://tilt-tag.sociobot.in> must not release yet.**
+
+Independent verification on 2026-09-01 found the deployed files match this candidate and all listed claim commands, `npm test`, lint, typecheck, build, live game-flow, privacy, mobile, keyboard, accessibility, offline, and header checks passed. The release blocker is contractual: `.factory/claims.json` does not contain a tagged claim test for every public promise. Missing entries include the advertised tilt/touch/key modes, Escape pause, audio/mute persistence, demo reset/isolation, and third-party-resource absence. See [verification-2.md](verification-2.md) for exact evidence and repair requirements.
+
+## Previous repair handoff
 
 ## Outcome
 
