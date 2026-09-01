@@ -32,7 +32,7 @@ Spacing follows an 8 px scale: 8, 16, 24, 32, 48, 64, and 96 px. Body text stays
 
 ## Layout and shape language
 
-The first screen is an asymmetric two-part stage: a concise task plate overlaps the environmental scene, while the live portrait game board remains visible beside it. On phones, the task plate becomes a short top section and the game board follows without a menu wall. Panels use clipped corners inspired by instrument plates. Targets are circular; hazards are sharp; buttons use a copper lower edge that reads as a physical control.
+The first screen is an asymmetric two-part stage: a concise task plate overlaps the environmental scene, while a running portrait game board remains visible beside it. On phones, the task plate stays compact so the real canvas and its touch pad enter the 390 × 844 cold viewport. Panels use clipped corners inspired by instrument plates. Targets are circular; hazards are sharp; buttons use a copper lower edge that reads as a physical control.
 
 ## Game feedback and difficulty
 
@@ -49,4 +49,3 @@ The main asset is a wide cinematic observatory interior with an oversized copper
 Prompt sheet: “Cinematic environmental concept art of an abandoned magnetic observatory at night, monumental circular stone instrument basin, one oversized horseshoe magnet made from weathered copper floating above it, tiny mint signal lights, soft mineral fog, deep blue-black slate, warm amber rim light, realistic tactile materials, 28 mm lens, wide composition, generous dark negative space on the left and calm centre, no people, no text, no numbers, no logos, no watermark, no interface, no brands, no extra magnets, no neon gradient.”
 
 The hero image is generated for this product with the factory image model on 2026-09-01. Source PNG and prompt metadata live in `assets/src/`. Shipped WebP crops are optimized below 300 KB. Generated imagery is disclosed in the footer.
-

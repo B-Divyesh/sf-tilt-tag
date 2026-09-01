@@ -11,12 +11,22 @@ Audit date: 2026-09-01. Hyphenated terms count as one word. Navigation labels an
 | 90-second browser game | 3 | Pass |
 | Tilt a magnet. | 3 | Pass |
 | Tag every target. | 3 | Pass |
-| For phone players who want a three-minute challenge without an install. | 11 | Pass |
+| For phone players who want one 90-second challenge without an install. | 11 | Pass |
 | Try it with sample data | 5 | Pass |
-| Starts a sample run with touch and keys. | 8 | Pass |
+| Opens this sample run with touch and keys. | 8 | Pass |
 | Free to play. | 3 | Pass |
 | No account. | 2 | Pass |
 | Scores stay on this device. | 5 | Pass |
+| Playable sample | 2 | Pass |
+| Use the pad or movement keys. | 6 | Pass |
+| Time | 1 | Pass |
+| Score | 1 | Pass |
+| Shields | 1 | Pass |
+| Sound on | 2 | Pass |
+| Pause | 1 | Pass |
+| Drag to move | 3 | Pass |
+| Daily seed | 2 | Pass |
+| Best | 1 | Pass |
 | Today’s field | 2 | Pass |
 | See the game before you start | 6 | Pass |
 | Round mint targets add points. | 5 | Pass |
@@ -33,8 +43,8 @@ Audit date: 2026-09-01. Hyphenated terms count as one word. Navigation labels an
 | Avoid red hazards until the 90-second timer ends. | 8 | Pass |
 | Privacy and limits | 3 | Pass |
 | Your phone handles the game | 5 | Pass |
-| Tilt readings control the magnet in memory. | 7 | Pass |
-| Tilt Tag does not record or send them. | 8 | Pass |
+| Live tilt readings control the magnet in memory. | 8 | Pass |
+| Only your chosen center offsets are saved, and nothing is sent. | 11 | Pass |
 | There are no accounts or public leaderboards. | 7 | Pass |
 | Your settings and scores use local browser storage. | 8 | Pass |
 | The game does not use a camera, location, ads, or third-party trackers. | 12 | Pass |

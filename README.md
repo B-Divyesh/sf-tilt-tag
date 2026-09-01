@@ -18,7 +18,7 @@ The demo starts one sample run with a sample best score. Its local storage keys 
 - Switch on inversion, seated mode, or reduced motion before or during a run.
 - Sound starts only after player input. The mute setting persists.
 
-Control settings, best scores, run counts, and unfinished runs stay in local browser storage. Raw motion readings are not stored. The service worker makes the game work offline after the first visit. The render loop targets 60 frames per second; the browser test measures it under 4× CPU throttling.
+Control settings, chosen tilt calibration offsets, best scores, run counts, and unfinished runs stay in local browser storage. Other live motion readings are not stored or sent. The service worker makes the game work offline after the first visit. Average game-loop work stays under 20 ms in the 4× CPU-throttled browser test.
 
 ## Develop
 
@@ -35,9 +35,11 @@ Open <http://127.0.0.1:5173>. The project has no runtime API, database, account,
 
 ```sh
 npm test
+npm run lint
+npm run typecheck
 ```
 
-This runs deterministic core tests and Playwright 1.58.2 browser tests. The suite checks the full run, restart, controls, persistence, demo isolation, offline reload, frame cadence, accessibility, and the 390 px layout. Claim definitions and their exact commands are in [`.factory/claims.json`](.factory/claims.json).
+These commands run deterministic core tests, Playwright 1.58.2 browser tests, ESLint, and strict TypeScript checks. The suite checks the full run, restart, controls, persistence, demo isolation, offline reload, game-loop work, accessibility, and the 390 px layout. Claim definitions and their exact commands are in [`.factory/claims.json`](.factory/claims.json).
 
 ## Build and deploy
 

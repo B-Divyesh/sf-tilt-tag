@@ -82,6 +82,7 @@ function demoBanner(): string {
 }
 
 function homePage(): string {
+  const testQuery = new URLSearchParams(location.search).get('e2e') === '1' ? '?e2e=1' : '';
   return `${header()}
     <main id="main">
       <section class="hero" aria-labelledby="hero-title">
@@ -92,9 +93,13 @@ function homePage(): string {
         <div class="hero-copy">
           <p class="eyebrow">90-second browser game</p>
           <h1 id="hero-title">Tilt a magnet. Tag every target.</h1>
-          <p class="lede">For phone players who want a three-minute challenge without an install.</p>
-          <div class="hero-action"><a class="primary-button" href="/demo" data-link>Try it with sample data</a><span>Starts a sample run with touch and keys.</span></div>
+          <p class="lede">For phone players who want one 90-second challenge without an install.</p>
+          <div class="hero-action"><a class="primary-button" href="/demo${testQuery}" data-link>Try it with sample data</a><span>Opens this sample run with touch and keys.</span></div>
           <ul class="plain-facts" aria-label="Game facts"><li>Free to play.</li><li>No account.</li><li>Scores stay on this device.</li></ul>
+        </div>
+        <div class="home-game-shell" aria-label="Playable sample game">
+          <p><strong>Playable sample</strong> · Use the pad or movement keys.</p>
+          <div data-home-game-root></div>
         </div>
       </section>
       <section class="live-preview" aria-labelledby="preview-title">
@@ -117,7 +122,7 @@ function homePage(): string {
       </section>
       <section class="privacy-section" aria-labelledby="privacy-title">
         <div><p class="eyebrow">Privacy and limits</p><h2 id="privacy-title">Your phone handles the game</h2></div>
-        <div><p>Tilt readings control the magnet in memory. Tilt Tag does not record or send them.</p><p>There are no accounts or public leaderboards. Your settings and scores use local browser storage.</p><p>The game does not use a camera, location, ads, or third-party trackers.</p></div>
+        <div><p>Live tilt readings control the magnet in memory. Only your chosen center offsets are saved, and nothing is sent.</p><p>There are no accounts or public leaderboards. Your settings and scores use local browser storage.</p><p>The game does not use a camera, location, ads, or third-party trackers.</p></div>
       </section>
     </main>${footer()}`;
 }
@@ -140,7 +145,7 @@ function privacyPage(): string {
     <p class="eyebrow">Privacy</p><h1>Your game stays on this device</h1>
     <p class="lede">Tilt Tag has no account system, advertising, or analytics.</p>
     <h2>What the game stores</h2><p>The browser stores your best score, run count, control settings, and an unfinished run. This data stays in local storage on your device.</p>
-    <h2>Motion data</h2><p>Phone orientation readings move the magnet while you play. The game does not save or send those readings.</p>
+    <h2>Motion data</h2><p>Live phone orientation readings move the magnet while you play. The game does not save or send them. Your chosen center offsets stay with your control settings.</p>
     <h2>Demo data</h2><p>The demo uses keys that start with <code>demo:tilt-tag:</code>. It never reads or changes your real game keys. Reset demo removes only those demo keys.</p>
     <h2>Network requests</h2><p>The game loads its own files from this site. It does not load third-party scripts, fonts, or trackers.</p>
     <h2>Remove your data</h2><p>Clear this site’s storage in your browser settings. You can also reset demo data from the demo banner.</p>
@@ -187,7 +192,10 @@ function render(shouldFocus = false): void {
   else if (route === 'terms') app.innerHTML = termsPage();
   else app.innerHTML = notFoundPage();
 
-  if (route === 'demo' || route === 'play') {
+  if (route === 'home') {
+    const root = app.querySelector<HTMLElement>('[data-home-game-root]');
+    if (root) gameView = new GameView(root, true);
+  } else if (route === 'demo' || route === 'play') {
     const root = app.querySelector<HTMLElement>('[data-game-root]');
     if (root) gameView = new GameView(root, route === 'demo');
   }

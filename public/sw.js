@@ -1,4 +1,4 @@
-const CACHE = 'tilt-tag-v1';
+const CACHE = 'tilt-tag-v2';
 const SHELL = [
   '/', '/demo', '/assets/observatory-768.webp', '/assets/observatory-1280.webp',
   '/fonts/atkinson-400.woff2', '/fonts/atkinson-700.woff2', '/fonts/fraunces-600.woff2',

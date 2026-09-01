@@ -51,6 +51,8 @@ export class GameView {
   private audio: AudioContext | null = null;
   private disposed = false;
   private resultRecorded = false;
+  private overlayReturnFocus: HTMLElement | null = null;
+  private frameWork: number[] = [];
 
   constructor(root: HTMLElement, demo: boolean) {
     this.root = root;
@@ -93,7 +95,7 @@ export class GameView {
 
   private markup(): string {
     return `
-      <section class="game-instrument" aria-label="Tilt Tag game">
+      <section class="game-instrument" aria-label="Tilt Tag game" tabindex="-1">
         <div class="game-hud" aria-label="Run status">
           <div><span>Time</span><strong data-time>1:30</strong></div>
           <div><span>Score</span><strong data-score>0</strong></div>
@@ -211,6 +213,11 @@ export class GameView {
   private showOverlay(view: 'setup' | 'tilt' | 'pause' | 'resume' | 'settings' | 'end', message = ''): void {
     const overlay = this.root.querySelector<HTMLElement>('[data-overlay]');
     if (!overlay) return;
+    if (overlay.hidden) {
+      this.overlayReturnFocus = document.activeElement instanceof HTMLElement && document.activeElement !== document.body
+        ? document.activeElement
+        : null;
+    }
     overlay.hidden = false;
     if (view === 'setup') {
       overlay.innerHTML = `<div class="overlay-card" role="dialog" aria-modal="true" aria-labelledby="setup-title">
@@ -254,8 +261,14 @@ export class GameView {
   private hideOverlay(): void {
     const overlay = this.root.querySelector<HTMLElement>('[data-overlay]');
     if (overlay) {
+      const wasOpen = !overlay.hidden;
       overlay.hidden = true;
       overlay.innerHTML = '';
+      const returnTarget = wasOpen
+        ? (this.overlayReturnFocus?.isConnected ? this.overlayReturnFocus : this.root.querySelector<HTMLElement>('.game-instrument'))
+        : null;
+      this.overlayReturnFocus = null;
+      requestAnimationFrame(() => returnTarget?.focus({ preventScroll: true }));
     }
   }
 
@@ -292,6 +305,26 @@ export class GameView {
   }
 
   private onKeyDown = (event: KeyboardEvent): void => {
+    const overlay = this.root.querySelector<HTMLElement>('[data-overlay]:not([hidden])');
+    if (event.key === 'Tab' && overlay) {
+      const focusable = Array.from(overlay.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), select:not([disabled]), input:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+      )).filter((element) => element.getClientRects().length > 0);
+      if (focusable.length > 0) {
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        const active = document.activeElement;
+        if (event.shiftKey && (active === first || !overlay.contains(active))) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && (active === last || !overlay.contains(active))) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+      return;
+    }
+    if (overlay) return;
     const controls = this.activeKeys();
     if (Object.values(controls).includes(event.code)) {
       event.preventDefault();
@@ -355,6 +388,7 @@ export class GameView {
 
   private frame = (now: number): void => {
     if (this.disposed) return;
+    const workStarted = performance.now();
     const delta = Math.min(0.1, Math.max(0, (now - this.lastFrame) / 1000));
     this.lastFrame = now;
     if (this.state.status === 'playing') {
@@ -376,6 +410,13 @@ export class GameView {
     }
     this.render();
     this.updateHud();
+    this.frameWork.push(performance.now() - workStarted);
+    if (this.frameWork.length >= 90) {
+      const sorted = [...this.frameWork].sort((a, b) => a - b);
+      this.root.dataset.frameWorkAverage = (this.frameWork.reduce((sum, value) => sum + value, 0) / this.frameWork.length).toFixed(3);
+      this.root.dataset.frameWorkP95 = sorted[Math.floor(sorted.length * 0.95)].toFixed(3);
+      this.frameWork = [];
+    }
     this.raf = requestAnimationFrame(this.frame);
   };
 
@@ -572,7 +613,8 @@ export class GameView {
   dispose(): void {
     this.disposed = true;
     cancelAnimationFrame(this.raf);
-    this.state.status === 'ended' ? saveRun(this.demo, null) : saveRun(this.demo, this.state);
+    if (this.state.status === 'ended') saveRun(this.demo, null);
+    else saveRun(this.demo, this.state);
     this.root.removeEventListener('click', this.onClick);
     window.removeEventListener('keydown', this.onKeyDown);
     window.removeEventListener('keyup', this.onKeyUp);

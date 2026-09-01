@@ -45,7 +45,7 @@ export interface GameState {
   hazards: Hazard[];
 }
 
-export interface GameInput extends Vector {}
+export type GameInput = Vector;
 
 function nextRandom(state: GameState): number {
   let x = state.rngState | 0;

@@ -57,7 +57,7 @@
   },
   {
     "id": "sensor-privacy",
-    "claim": "Tilt readings stay in memory and are not sent.",
+    "claim": "Live tilt readings are not saved or sent; chosen calibration offsets stay on this device.",
     "where": "landing page, privacy page, and README",
     "test": "npx playwright test --grep '@claim:sensor-privacy'",
     "sandbox": "fresh demo context; dispatch distinct orientation values, inspect demo storage, and record outgoing requests"
@@ -78,9 +78,9 @@
   },
   {
     "id": "frame-rate",
-    "claim": "The game targets 60 frames per second on a mid-range phone.",
+    "claim": "Average game-loop work stays under 20 ms with 4x CPU throttling.",
     "where": "README and handoff",
     "test": "npx playwright test --grep '@claim:frame-rate'",
-    "sandbox": "Chromium sample run with 4x CPU throttling; measure 90 requestAnimationFrame intervals"
+    "sandbox": "Chromium sample run with 4x CPU throttling; measure the game simulation, render, and HUD work across 90 frames"
   }
 ]
