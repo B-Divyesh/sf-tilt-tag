@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tilt-tag.sociobot.in/sitemap.xml

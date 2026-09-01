@@ -1,0 +1,9 @@
+{
+  "tool": "/opt/fleet/lib/gen-image.sh",
+  "model": "factory-image",
+  "date": "2026-09-01",
+  "size": "1536x1024",
+  "quality": "high",
+  "review": "Accepted. One coherent magnet, no people, text, logos, watermarks, seams, or unintended symbols. The dark left field supports a contrast plate.",
+  "prompt": "Cinematic environmental concept art of an abandoned magnetic observatory at night, monumental circular stone instrument basin, one oversized horseshoe magnet made from weathered copper floating above it, tiny mint signal lights, soft mineral fog, deep blue-black slate, warm amber rim light, realistic tactile materials, 28 mm lens, wide composition, generous dark negative space on the left and calm centre, no people, no text, no numbers, no logos, no watermark, no interface, no brands, no extra magnets, no neon gradient."
+}

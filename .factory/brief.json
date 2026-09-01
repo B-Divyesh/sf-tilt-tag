@@ -1,0 +1,10 @@
+{
+  "slug": "tilt-tag",
+  "title": "Tilt Tag",
+  "artifact_class": "browser-game",
+  "summary": "Tilt a magnet through a 90-second daily obstacle run.",
+  "user": "People with a phone and three spare minutes who want a tactile browser challenge without an install.",
+  "smallest_useful_product": "A portrait web game: tilt a magnet to collect targets while avoiding hazards in 90-second runs, with calibration, inversion, seated mode, touch fallback, and a daily seed.",
+  "monetization": "free",
+  "success_measure": "At least 70% of first-time players finish calibration and 20% play three or more runs in one session."
+}

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Tilt Tag magnet">
+  <rect width="64" height="64" rx="14" fill="#102529"/>
+  <path d="M17 15v23c0 10 6 16 15 16s15-6 15-16V15H36v23c0 3-1 5-4 5s-4-2-4-5V15Z" fill="#F4A261"/>
+  <path d="M17 15h11v10H17zm19 0h11v10H36z" fill="#76E6C4"/>
+</svg>
