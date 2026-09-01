@@ -66,7 +66,12 @@ export function loadSettings(demo: boolean): Settings {
 }
 
 export function saveSettings(demo: boolean, settings: Settings): boolean {
-  return write(demo, SETTINGS_KEY, settings);
+  return write(demo, SETTINGS_KEY, {
+    ...settings,
+    calibrated: settings.mode === 'touch' && settings.calibrated,
+    betaOffset: 0,
+    gammaOffset: 0,
+  });
 }
 
 export function loadProgress(demo: boolean): Progress {

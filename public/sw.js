@@ -6,7 +6,15 @@ const SHELL = [
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting()));
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE);
+    await cache.addAll(SHELL);
+    const indexResponse = await fetch('/');
+    const markup = await indexResponse.clone().text();
+    const builtAssets = [...markup.matchAll(/(?:src|href)="(\/assets\/[^\"]+)"/g)].map((match) => match[1]);
+    await cache.addAll([...new Set(builtAssets)]);
+    await self.skipWaiting();
+  })());
 });
 
 self.addEventListener('activate', (event) => {
@@ -19,9 +27,9 @@ self.addEventListener('fetch', (event) => {
     if (response.ok) caches.open(CACHE).then((cache) => cache.put(event.request, response.clone()));
     return response;
   }).catch(async () => {
-    const cached = await caches.match(event.request);
+    const cached = await caches.match(event.request, { ignoreVary: true });
     if (cached) return cached;
-    if (event.request.mode === 'navigate') return (await caches.match('/demo')) || caches.match('/');
+    if (event.request.mode === 'navigate') return (await caches.match('/demo', { ignoreVary: true })) || caches.match('/', { ignoreVary: true });
     return new Response('This file is unavailable offline.', { status: 503, headers: { 'Content-Type': 'text/plain' } });
   }));
 });

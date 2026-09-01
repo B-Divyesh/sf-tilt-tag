@@ -1,6 +1,20 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
+test('@claim:free-access the game is free and asks for no account', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByText('Free to play.')).toBeVisible();
+  await expect(page.getByText('No account.')).toBeVisible();
+  await expect(page.locator('form')).toHaveCount(0);
+  await expect(page.locator('a[href*="checkout"], a[href*="billing"], a[href*="buy"]')).toHaveCount(0);
+});
+
+test('@claim:run-format a standard run starts at 90 seconds with three shields', async ({ page }) => {
+  await page.goto('/demo');
+  await expect(page.locator('[data-time]')).toHaveText('1:30');
+  await expect(page.locator('[data-shields]')).toHaveAttribute('aria-label', '3 shields');
+});
+
 test('@claim:complete-run a run reaches its score summary', async ({ page }) => {
   await page.goto('/demo?e2e=1');
   await expect(page.getByRole('heading', { name: /You scored/ })).toBeVisible({ timeout: 5_000 });
@@ -64,6 +78,35 @@ test('@claim:local-privacy demo traffic stays on origin and uses demo storage', 
   expect(keys.length).toBeGreaterThan(0);
   expect(keys.every((key) => key.startsWith('demo:tilt-tag:'))).toBe(true);
   expect(outsideRequests).toEqual([]);
+});
+
+test('@claim:sensor-privacy motion readings stay in memory', async ({ page }) => {
+  const outsideRequests: string[] = [];
+  page.on('request', (request) => {
+    if (new URL(request.url()).origin !== 'http://127.0.0.1:4173') outsideRequests.push(request.url());
+  });
+  await page.goto('/demo');
+  await page.evaluate(() => {
+    window.dispatchEvent(new DeviceOrientationEvent('deviceorientation', { beta: 33.3, gamma: 12.2 }));
+  });
+  await page.getByRole('button', { name: 'Pause' }).click();
+  const storedValues = await page.evaluate(() => Object.values(localStorage).join(' '));
+  expect(storedValues).not.toContain('33.3');
+  expect(storedValues).not.toContain('12.2');
+  expect(outsideRequests).toEqual([]);
+});
+
+test('@claim:no-device-access camera and location are never requested', async ({ page }) => {
+  await page.addInitScript(() => {
+    const calls = { camera: 0, location: 0 };
+    Object.defineProperty(window, '__deviceCalls', { value: calls });
+    if (navigator.mediaDevices) navigator.mediaDevices.getUserMedia = async () => { calls.camera += 1; throw new Error('blocked in test'); };
+    navigator.geolocation.getCurrentPosition = () => { calls.location += 1; };
+  });
+  await page.goto('/demo');
+  await page.waitForTimeout(250);
+  const calls = await page.evaluate(() => (window as unknown as { __deviceCalls: { camera: number; location: number } }).__deviceCalls);
+  expect(calls).toEqual({ camera: 0, location: 0 });
 });
 
 test('@claim:offline-reload works offline after the first visit', async ({ browser }) => {

@@ -1,5 +1,26 @@
 [
   {
+    "id": "free-access",
+    "claim": "Tilt Tag is free to play and needs no account.",
+    "where": "landing page and README",
+    "test": "npx playwright test --grep '@claim:free-access'",
+    "sandbox": "fresh landing page; assert free and no-account copy, no account form, and no payment link"
+  },
+  {
+    "id": "run-format",
+    "claim": "A standard run starts with 90 seconds and three shields.",
+    "where": "landing page, game HUD, and README",
+    "test": "npx playwright test --grep '@claim:run-format'",
+    "sandbox": "fresh /demo; assert the visible 1:30 timer and three-shield accessible state"
+  },
+  {
+    "id": "core-rules",
+    "claim": "Targets add points and hazards remove shields.",
+    "where": "landing page and README",
+    "test": "npx vitest run test/game.test.ts -t '@claim:core-rules'",
+    "sandbox": "deterministic seeded game; place one target and one hazard on the player and assert score and shields"
+  },
+  {
     "id": "complete-run",
     "claim": "A run reaches a score summary.",
     "where": "game end screen and README",
@@ -33,6 +54,20 @@
     "where": "landing page, privacy page, and README",
     "test": "npx playwright test --grep '@claim:local-privacy'",
     "sandbox": "fresh demo context; record every request and inspect storage keys during play"
+  },
+  {
+    "id": "sensor-privacy",
+    "claim": "Tilt readings stay in memory and are not sent.",
+    "where": "landing page, privacy page, and README",
+    "test": "npx playwright test --grep '@claim:sensor-privacy'",
+    "sandbox": "fresh demo context; dispatch distinct orientation values, inspect demo storage, and record outgoing requests"
+  },
+  {
+    "id": "no-device-access",
+    "claim": "The game does not request camera or location access.",
+    "where": "landing page",
+    "test": "npx playwright test --grep '@claim:no-device-access'",
+    "sandbox": "fresh demo context with camera and location methods instrumented before page scripts run"
   },
   {
     "id": "offline-reload",
