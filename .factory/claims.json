@@ -1,0 +1,51 @@
+[
+  {
+    "id": "complete-run",
+    "claim": "A run reaches a score summary.",
+    "where": "game end screen and README",
+    "test": "npx playwright test --grep '@claim:complete-run'",
+    "sandbox": "fresh browser context at /demo?e2e=1; wait for the deterministic shortened test run to end"
+  },
+  {
+    "id": "run-restart",
+    "claim": "Play again resets the run.",
+    "where": "game end screen and README",
+    "test": "npx playwright test --grep '@claim:run-restart'",
+    "sandbox": "demo end screen; press Play again and assert zero score, three shields, and playing state"
+  },
+  {
+    "id": "settings-persist",
+    "claim": "Control settings stay on this device.",
+    "where": "landing page, privacy page, and README",
+    "test": "npx playwright test --grep '@claim:settings-persist'",
+    "sandbox": "fresh real-mode storage; set inversion, seated mode, and W A S D; reload and inspect controls"
+  },
+  {
+    "id": "daily-layout",
+    "claim": "Every player gets the same layout for the current UTC day.",
+    "where": "play page and README",
+    "test": "npx playwright test --grep '@claim:daily-layout'",
+    "sandbox": "two fresh browser contexts; compare the displayed daily seed"
+  },
+  {
+    "id": "local-privacy",
+    "claim": "Scores and settings stay on this device.",
+    "where": "landing page, privacy page, and README",
+    "test": "npx playwright test --grep '@claim:local-privacy'",
+    "sandbox": "fresh demo context; record every request and inspect storage keys during play"
+  },
+  {
+    "id": "offline-reload",
+    "claim": "Works offline after the first visit.",
+    "where": "README",
+    "test": "npx playwright test --grep '@claim:offline-reload'",
+    "sandbox": "own fresh browser context; load /demo online, wait for the service worker, set offline, then reload"
+  },
+  {
+    "id": "frame-rate",
+    "claim": "The game targets 60 frames per second on a mid-range phone.",
+    "where": "README and handoff",
+    "test": "npx playwright test --grep '@claim:frame-rate'",
+    "sandbox": "Chromium sample run with 4x CPU throttling; measure 90 requestAnimationFrame intervals"
+  }
+]
