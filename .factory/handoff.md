@@ -1,4 +1,15 @@
-# Tilt Tag handoff
+# Tilt Tag handoff — verification status: **FAIL**
+
+## Independent verification (2026-09-01 UTC)
+
+Candidate `7bea8a6a0936cc00a4758bbf1e2ef609176bd71d` was independently checked against the live deployment at https://tilt-tag.sociobot.in. **It must not be released.**
+
+- Required claim `@claim:frame-rate` fails reproducibly: 4× CPU-throttled average frame interval was 36.469 ms; required result is under 20 ms.
+- The 390 px cold first screen is a landing hero, not the playable game, which fails the browser-game capture requirement.
+- Setup/pause dialogs do not trap keyboard focus; Tab escapes to page/footer links.
+- Tilt calibration and its offsets are discarded from local storage, so a refreshed tilt run cannot retain its calibration.
+
+See `.factory/verification.md` for exact commands, pass/fail results, deployment hash comparison, gameplay evidence, headers, privacy checks, and repair steps. The build itself passes, but `npm test` is **not green** because the required frame-rate claim fails.
 
 ## Built
 
