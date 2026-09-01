@@ -48,7 +48,14 @@ The verifier’s original exact command, `npx playwright test --grep '@claim:fra
 - Target: Azure Static Web App `sf-tilt-tag` in resource group `sociobot`.
 - Public URL: `https://tilt-tag.sociobot.in`.
 - Build output: `dist/`.
-- Live deployment and response-policy evidence will be appended after this repair commit is deployed.
+- Repair commits: `b93a7a5` (product and regression repairs) and `50c815d` (explicit SPA routes and real 404 response).
+- Deployed to the production environment with Static Web Apps CLI 2.0.10. The platform deployment URL is `https://calm-coast-0143b3410.6.azurestaticapps.net`.
+- `/opt/fleet/lib/verify-url.sh https://tilt-tag.sociobot.in …`: passed with HTTP 200, 769 ms load, title and `lang`, one h1, main landmark, zero missing alt text, zero unlabeled buttons, and zero console/page errors.
+- Local/live asset identity matched exactly: JS SHA-256 `a7de5789f35be15701e1bff7fe534f76db9b70ba963c7634ade27a53679bc5e9`; CSS SHA-256 `f7d2e5a864922674bd0c0269d596a9628c370f9f3281eb63a8eb2484913b5818`.
+- Live browser checks passed at 390 × 844: game and pad in the first viewport, end screen and restart, dialog focus trap, stored/restored beta `14.5` and gamma `-6.25` offsets, offline reload, no console errors, and no cross-origin requests.
+- Live axe-core CLI: 0 violations on `/`, `/play`, and `/demo`.
+- Live routes `/`, `/demo`, `/play`, `/privacy`, and `/terms` return 200. An unknown route returns the designed 404 page with HTTP 404.
+- Live responses include self-only CSP, HSTS, `nosniff`, `Referrer-Policy: no-referrer`, motion/camera/location `Permissions-Policy`, and immutable one-year caching for hashed assets.
 
 ## Known gap
 
