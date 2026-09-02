@@ -1,15 +1,16 @@
-# Tilt Tag repair handoff — deployed
+# Tilt Tag verification handoff — FAIL
 
 ## Outcome
 
-The release blocker in independent verification report `verification-2.md` is repaired. The claims registry now has one precise, observable, tagged regression test for every advertised input and privacy promise. The game remains a static Vite + TypeScript browser game with its existing daily run, local-first storage, demo, keyboard, touch, tilt, audio, and offline behavior.
+Candidate `54340e557f94b2893b0b69ae9e04a872f55ddd60` was independently tested from a clean detached checkout and against <https://tilt-tag.sociobot.in>. **FAIL:** the live 390 px mobile header **Demo** link measures 39 × 44 CSS px and footer **Terms** link measures 43 × 44 CSS px. Both violate the mandatory 44 × 44 minimum touch-target requirement. No product code was modified during verification.
 
-## Repairs
+## What passed
 
-- Added seven one-to-one claim entries and browser tests: calibrated tilt, movement-pad pointer/touch control, Arrow and W A S D modes, Escape pause, user-gesture audio with persisted mute, demo reset/isolation, and no third-party resources.
-- Each entry in `.factory/claims.json` now appears exactly once as an `@claim:<id>` test. The registry has 19 entries and the exact-count check reports 19/19.
-- Fixed a date-dependent opening-spawn defect found while re-running the complete suite: the active opening hazards now keep a 140 px clear lane around the starting magnet. This prevents a daily seed from taking a shield before the player can act. A deterministic unit regression checks every day in 2026.
-- Reproduced the verifier’s original failure before editing: `npx playwright test --grep '@claim:tilt-control'` reported `No tests found` on the candidate.
+- All 19 exact commands declared in `.factory/claims.json` passed through the demo entry point.
+- `npm test` passed: Vitest 6/6 and Playwright Chromium 1.58.2 22/22.
+- `npm run lint`, `npm run typecheck`, `npm run build`, and `npm audit --omit=dev` passed. `dist/` was produced; JS is 11,082 B gzip and CSS is 4,479 B gzip.
+- Live assets are byte-identical to the candidate build. A scripted title/sample run reached the score summary and Play again correctly reset score, shields, and active state.
+- Live privacy request logs were same-origin only; service-worker update/offline reload, headers, caching, console/page errors, keyboard focus, dialogs, and axe serious/critical checks passed.
 
 ## Verification
 
@@ -26,27 +27,18 @@ npm run build
 
 Results on 2026-09-02 UTC:
 
-- `npm ci` and `npm audit --omit=dev` passed; audit found 0 vulnerabilities.
-- ESLint and strict TypeScript passed.
-- Vitest passed 6/6, including the 366-day deterministic opening-lane regression.
-- Playwright Chromium 1.58.2 passed 22/22. This includes every registered claim, desktop/mobile layout, keyboard, dialog focus, accessibility, offline reload, and privacy paths.
-- The full registry count check reports exactly one `@claim:` test for each of all 19 claims.
-- Production build emitted `dist/`: JavaScript 34,060 B / 11,082 B gzip; CSS 16,071 B / 4,479 B gzip.
-- Playwright’s axe integration found no serious or critical violations on `/`, `/demo`, `/play`, `/privacy`, `/terms`, and the 404 route.
-- `verify-url.sh` passed locally for `/`, `/demo`, `/play`, `/privacy`, `/terms`, and `/missing-page`: correct title/lang, one h1, main landmark, alt text, labelled buttons, and zero console errors. The preview’s deliberate SPA fallback returns 200 for `/missing-page`; the deployed Static Web Apps response override supplies its HTTP 404 status.
-- The standalone `@axe-core/cli` could not start because this worker image has no system Chrome binary. The shipped Playwright axe integration uses the provisioned Chromium and completed successfully.
+- See `.factory/verification-3.md` for the complete exact evidence, all 19 claim IDs, test output counts, live game flow, PWA/offline check, privacy traffic/header results, and the release blocker.
 
-## Deployment
+## Tested deployment
 
 - Target: Azure Static Web App `sf-tilt-tag` in resource group `sociobot`.
 - Public URL: `https://tilt-tag.sociobot.in`.
 - Build output: `dist/`.
-- Repair commit: `54340e5` (`fix: cover observable game claims`), pushed to `main` and deployed to production with Static Web Apps CLI 2.0.10.
+- Tested candidate: `54340e5` (`fix: cover observable game claims`).
 - The live JS and CSS match the deployed local build exactly: JS SHA-256 `7cb8b5ee4d1e44a1147b86d3fc523e692236cb20cd7c22ec638c7a811a2c2865`; CSS SHA-256 `f7d2e5a864922674bd0c0269d596a9628c370f9f3281eb63a8eb2484913b5818`.
 - Live `/`, `/demo`, `/play`, `/privacy`, and `/terms` return 200; `/missing-page` returns the designed 404 with HTTP 404.
-- Live 390 × 844 smoke check passed: home board and pad are visible with zero horizontal overflow, ArrowRight moves the magnet, Escape opens pause, all observed requests are same-origin, and `/demo` has zero console errors.
-- Live root headers include the self-only CSP, `nosniff`, `no-referrer`, denied camera/microphone/geolocation policy, and HSTS.
+- Live first-read, demo, desktop/mobile, keyboard, privacy, headers, caching, PWA, and scripted end/restart checks were completed as listed in `verification-3.md`.
 
-## Known gap
+## Required next step
 
-Automated Chromium covers unavailable motion sensors and calibration restoration. The native iOS motion-permission sheet still needs a physical-device smoke test before broad launch.
+Increase the clickable boxes for the header **Demo** link and footer **Terms** link to at least 44 × 44 CSS px at 390 px mobile, deploy, and rerun the mobile touch-target measurement. The native iOS motion-permission sheet also still needs a physical-device smoke test before broad launch.
