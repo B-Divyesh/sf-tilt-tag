@@ -190,12 +190,17 @@ test('@claim:touch-control dragging the movement pad moves the magnet', async ({
   const padBox = await pad.boundingBox();
   expect(padBox).not.toBeNull();
   const before = Number(await board.getAttribute('data-player-x'));
-  await page.mouse.move(padBox!.x + padBox!.width / 2, padBox!.y + padBox!.height / 2);
-  await page.mouse.down();
-  await page.mouse.move(padBox!.x + padBox!.width - 5, padBox!.y + padBox!.height / 2);
+  const session = await page.context().newCDPSession(page);
+  await session.send('Emulation.setTouchEmulationEnabled', { enabled: true });
+  await session.send('Input.dispatchTouchEvent', {
+    type: 'touchStart', touchPoints: [{ x: padBox!.x + padBox!.width / 2, y: padBox!.y + padBox!.height / 2 }],
+  });
+  await session.send('Input.dispatchTouchEvent', {
+    type: 'touchMove', touchPoints: [{ x: padBox!.x + padBox!.width - 5, y: padBox!.y + padBox!.height / 2 }],
+  });
   await expect(knob).toHaveAttribute('style', /translate\(30px, 0px\)/);
   await page.waitForTimeout(300);
-  await page.mouse.up();
+  await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
   expect(Math.abs(Number(await board.getAttribute('data-player-x')) - before)).toBeGreaterThan(2);
 });
 
