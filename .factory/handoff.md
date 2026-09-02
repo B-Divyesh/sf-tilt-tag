@@ -1,4 +1,4 @@
-# Tilt Tag repair handoff — ready to deploy
+# Tilt Tag repair handoff — deployed
 
 ## Outcome
 
@@ -41,6 +41,11 @@ Results on 2026-09-02 UTC:
 - Target: Azure Static Web App `sf-tilt-tag` in resource group `sociobot`.
 - Public URL: `https://tilt-tag.sociobot.in`.
 - Build output: `dist/`.
+- Repair commit: `54340e5` (`fix: cover observable game claims`), pushed to `main` and deployed to production with Static Web Apps CLI 2.0.10.
+- The live JS and CSS match the deployed local build exactly: JS SHA-256 `7cb8b5ee4d1e44a1147b86d3fc523e692236cb20cd7c22ec638c7a811a2c2865`; CSS SHA-256 `f7d2e5a864922674bd0c0269d596a9628c370f9f3281eb63a8eb2484913b5818`.
+- Live `/`, `/demo`, `/play`, `/privacy`, and `/terms` return 200; `/missing-page` returns the designed 404 with HTTP 404.
+- Live 390 × 844 smoke check passed: home board and pad are visible with zero horizontal overflow, ArrowRight moves the magnet, Escape opens pause, all observed requests are same-origin, and `/demo` has zero console errors.
+- Live root headers include the self-only CSP, `nosniff`, `no-referrer`, denied camera/microphone/geolocation policy, and HSTS.
 
 ## Known gap
 
