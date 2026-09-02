@@ -82,5 +82,54 @@
     "where": "README and handoff",
     "test": "npx playwright test --grep '@claim:frame-rate'",
     "sandbox": "Chromium sample run with 4x CPU throttling; measure the game simulation, render, and HUD work across 90 frames"
+  },
+  {
+    "id": "tilt-control",
+    "claim": "Phone tilt can be calibrated to move the magnet on supported devices.",
+    "where": "landing page, play page, and README controls",
+    "test": "npx playwright test --grep '@claim:tilt-control'",
+    "sandbox": "fresh real-mode browser; center synthetic orientation values, then change tilt and assert the magnet moves"
+  },
+  {
+    "id": "touch-control",
+    "claim": "The on-screen movement pad controls the magnet with pointer or touch input.",
+    "where": "landing page, play page, and README controls",
+    "test": "npx playwright test --grep '@claim:touch-control'",
+    "sandbox": "fresh demo; drag the visible movement pad and assert the magnet moves"
+  },
+  {
+    "id": "keyboard-modes",
+    "claim": "Arrow keys and W A S D both control the magnet.",
+    "where": "landing page, play page, and README controls",
+    "test": "npx playwright test --grep '@claim:keyboard-modes'",
+    "sandbox": "fresh real-mode browser; move with ArrowRight, switch to W A S D, then move with KeyD"
+  },
+  {
+    "id": "escape-pause",
+    "claim": "Pressing Escape pauses an active run.",
+    "where": "play page and README controls",
+    "test": "npx playwright test --grep '@claim:escape-pause'",
+    "sandbox": "fresh demo; press Escape and assert the paused dialog and paused board state"
+  },
+  {
+    "id": "audio-mute-persistence",
+    "claim": "Sound starts only after player input, and mute stays on this device.",
+    "where": "README controls",
+    "test": "npx playwright test --grep '@claim:audio-mute-persistence'",
+    "sandbox": "fresh demo with an instrumented AudioContext; assert no audio context before input, one after input, then persist mute through reload"
+  },
+  {
+    "id": "demo-reset-isolation",
+    "claim": "Demo mode never reads real-game storage, and Reset demo removes only demo data.",
+    "where": "README, demo banner, privacy page, and demo documentation",
+    "test": "npx playwright test --grep '@claim:demo-reset-isolation'",
+    "sandbox": "fresh origin storage with distinct real and demo values; assert demo uses sample values, reset removes a demo-only marker, and real values remain"
+  },
+  {
+    "id": "no-third-party-resources",
+    "claim": "The game does not load third-party scripts, fonts, or trackers.",
+    "where": "privacy page and README",
+    "test": "npx playwright test --grep '@claim:no-third-party-resources'",
+    "sandbox": "fresh demo through play and pause; record every browser request and assert each resource is same-origin"
   }
 ]

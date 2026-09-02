@@ -9,6 +9,15 @@ describe('deterministic game core', () => {
     expect(first.hazards).toEqual(second.hazards);
   });
 
+  it('keeps opening hazards clear of the starting magnet for every daily seed', () => {
+    for (let day = 1; day <= 366; day += 1) {
+      const state = createGame(dailySeed(new Date(Date.UTC(2026, 0, day))));
+      for (const hazard of state.hazards.filter((candidate) => candidate.activeAt === 0)) {
+        expect(Math.hypot(hazard.x - state.player.x, hazard.y - state.player.y)).toBeGreaterThanOrEqual(140);
+      }
+    }
+  });
+
   it('@claim:core-rules targets add points and hazards remove shields', () => {
     const state = createGame(77);
     state.hazards.forEach((hazard) => { hazard.activeAt = 999; });

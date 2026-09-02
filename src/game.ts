@@ -84,13 +84,24 @@ function makeTarget(state: GameState): Target {
 
 export function createGame(seed: number, duration = RUN_SECONDS): GameState {
   const random = seedRandom(seed);
+  const playerStart = { x: BOARD_WIDTH / 2, y: BOARD_HEIGHT - 90 };
   const hazards: Hazard[] = Array.from({ length: 7 }, (_, index) => {
     const angle = random() * Math.PI * 2;
     const speed = 24 + random() * 25 + index * 1.8;
+    let x = 45 + random() * (BOARD_WIDTH - 90);
+    let y = 90 + random() * (BOARD_HEIGHT - 170);
+    // The active opening hazards must leave a clear lane around the starting magnet.
+    // A bad daily seed previously allowed an immediate hit before the player could act.
+    if (index < 3) {
+      for (let attempt = 0; attempt < 16 && Math.hypot(x - playerStart.x, y - playerStart.y) < 140; attempt += 1) {
+        x = 45 + random() * (BOARD_WIDTH - 90);
+        y = 90 + random() * (BOARD_HEIGHT - 170);
+      }
+    }
     return {
       id: index,
-      x: 45 + random() * (BOARD_WIDTH - 90),
-      y: 90 + random() * (BOARD_HEIGHT - 170),
+      x,
+      y,
       vx: Math.cos(angle) * speed,
       vy: Math.sin(angle) * speed,
       radius: 15 + random() * 5,
@@ -109,7 +120,7 @@ export function createGame(seed: number, duration = RUN_SECONDS): GameState {
     targetsCollected: 0,
     hazardHits: 0,
     invulnerableFor: 0,
-    player: { x: BOARD_WIDTH / 2, y: BOARD_HEIGHT - 90, vx: 0, vy: 0, radius: 17 },
+    player: { ...playerStart, vx: 0, vy: 0, radius: 17 },
     target: { x: BOARD_WIDTH / 2, y: 100, radius: 13, phase: 0 },
     hazards,
   };
