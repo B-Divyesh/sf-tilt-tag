@@ -169,7 +169,7 @@ function termsPage(): string {
 
 function notFoundPage(): string {
   return `${header()}<main id="main" class="lost-page">
-    <div><p class="eyebrow">404</p><h1>This target is out of range</h1><p>The page does not exist. The daily game is still ready.</p><a class="primary-button" href="/" data-link>Return to Tilt Tag</a></div>
+    <div><p class="eyebrow">404</p><h1>Page not found</h1><p>The page does not exist. The daily game is still ready.</p><a class="primary-button" href="/" data-link>Return to Tilt Tag</a></div>
   </main>${footer()}`;
 }
 

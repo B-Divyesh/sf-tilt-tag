@@ -100,7 +100,7 @@ export class GameView {
           <div><span>Time</span><strong data-time>1:30</strong></div>
           <div><span>Score</span><strong data-score>0</strong></div>
           <div><span>Shields</span><strong data-shields aria-label="3 shields">● ● ●</strong></div>
-          <button class="icon-button" type="button" data-mute aria-label="Mute sound">Sound on</button>
+          <button class="icon-button" type="button" data-mute aria-label="Sound on, mute sound">Sound on</button>
           <button class="icon-button" type="button" data-pause>Pause</button>
         </div>
         <div class="canvas-wrap" data-board>
@@ -236,7 +236,7 @@ export class GameView {
       </div>`;
     } else if (view === 'pause' || view === 'resume') {
       overlay.innerHTML = `<div class="overlay-card" role="dialog" aria-modal="true" aria-labelledby="pause-title">
-        <p class="eyebrow">${view === 'resume' ? 'Saved run found' : 'Run paused'}</p><h2 id="pause-title">${view === 'resume' ? 'Resume where you stopped' : 'Take your time'}</h2>
+        <p class="eyebrow">${view === 'resume' ? 'Saved run found' : 'Run paused'}</p><h2 id="pause-title">${view === 'resume' ? 'Resume where you stopped' : 'Run paused'}</h2>
         <p>${secondsLeft(this.state)} seconds and ${this.state.shields} shields remain.</p>
         <div class="button-stack"><button class="primary-button" data-action="resume">Resume run</button><button class="secondary-button" data-action="settings">Change controls</button><button class="text-button" data-action="restart">Restart run</button></div>
       </div>`;
@@ -463,7 +463,7 @@ export class GameView {
     if (best) best.textContent = this.progress.bestScore.toLocaleString();
     if (mute) {
       mute.textContent = this.settings.mute ? 'Sound off' : 'Sound on';
-      mute.setAttribute('aria-label', this.settings.mute ? 'Turn sound on' : 'Mute sound');
+      mute.setAttribute('aria-label', this.settings.mute ? 'Sound off, turn sound on' : 'Sound on, mute sound');
     }
     if (board) {
       board.dataset.playerX = this.state.player.x.toFixed(1);

@@ -419,7 +419,7 @@ test('@claim:keyboard-modes Arrow keys and W A S D both move the magnet', async 
 test('@claim:escape-pause Escape pauses an active run', async ({ page }) => {
   await page.goto('/demo');
   await page.keyboard.press('Escape');
-  await expect(page.getByRole('heading', { name: 'Take your time' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Run paused' })).toBeVisible();
   await expect(page.locator('[data-board]')).toHaveAttribute('data-state', 'paused');
 });
 
@@ -460,6 +460,27 @@ test('@claim:audio-mute-persistence sound waits for input and mute survives relo
   await page.reload();
   await expect(page.getByRole('button', { name: 'Turn sound on' })).toBeVisible();
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('demo:tilt-tag:settings') ?? '{}').mute)).toBe(true);
+});
+
+test('the sound control includes its visible state in its accessible name', async ({ page }) => {
+  await page.goto('/demo');
+  const sound = page.locator('[data-mute]');
+
+  const expectVisibleLabelInName = async () => {
+    const visibleLabel = (await sound.innerText()).trim();
+    const escapedLabel = visibleLabel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    await expect(sound).toHaveAccessibleName(new RegExp(escapedLabel, 'i'));
+  };
+
+  await expectVisibleLabelInName();
+  await sound.click();
+  await expect(sound).toHaveText('Sound off');
+  await expectVisibleLabelInName();
+
+  const results = await new AxeBuilder({ page: page as never })
+    .withRules(['label-content-name-mismatch'])
+    .analyze();
+  expect(results.violations).toEqual([]);
 });
 
 test('@claim:demo-reset-isolation demo ignores real storage, and both reset and exit leave it intact', async ({ page }) => {
@@ -513,6 +534,16 @@ test('landing and game have no serious accessibility violations', async ({ page 
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(page.locator('main')).toHaveCount(1);
   }
+});
+
+test('pause and missing-page headings name their state in plain words', async ({ page }) => {
+  await page.goto('/demo');
+  await page.getByRole('button', { name: 'Pause' }).click();
+  await expect(page.getByRole('heading', { level: 2, name: 'Run paused' })).toBeVisible();
+
+  await page.goto('/missing-page');
+  await expect(page).toHaveTitle('Page not found — Tilt Tag');
+  await expect(page.getByRole('heading', { level: 1, name: 'Page not found' })).toBeVisible();
 });
 
 test('mobile layout stays inside the viewport and navigation works', async ({ page }) => {
