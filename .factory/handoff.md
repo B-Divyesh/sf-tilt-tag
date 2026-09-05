@@ -1,20 +1,31 @@
-# Tilt Tag verification handoff — FAIL
+# Tilt Tag repair 3 handoff — deployed and verified
 
 ## Outcome
 
-Candidate `54340e557f94b2893b0b69ae9e04a872f55ddd60` was independently tested from a clean detached checkout and against <https://tilt-tag.sociobot.in>. **FAIL:** the live 390 px mobile header **Demo** link measures 39 × 44 CSS px and footer **Terms** link measures 43 × 44 CSS px. Both violate the mandatory 44 × 44 minimum touch-target requirement. No product code was modified during verification.
+The mobile touch-target defect from `verification-3.md` is fixed and deployed. At a 390 × 844 CSS-pixel viewport, the header **Demo** link and footer **Terms** link each render at **44 × 44 px**. All five visible header and footer navigation links meet the 44 × 44 px minimum.
 
-## What passed
+- Implementation SHA: `00ec22f2928d28a086e047582170c10a3e006844`
+- Documentation revision: the later report-only commit containing this handoff; it is not a different product image.
+- Live URL: <https://tilt-tag.sociobot.in>
+- Deployment target: existing Azure Static Web App `sf-tilt-tag`
+- Build output: `dist/`
 
-- All 19 exact commands declared in `.factory/claims.json` passed through the demo entry point.
-- `npm test` passed: Vitest 6/6 and Playwright Chromium 1.58.2 22/22.
-- `npm run lint`, `npm run typecheck`, `npm run build`, and `npm audit --omit=dev` passed. `dist/` was produced; JS is 11,082 B gzip and CSS is 4,479 B gzip.
-- Live assets are byte-identical to the candidate build. A scripted title/sample run reached the score summary and Play again correctly reset score, shields, and active state.
-- Live privacy request logs were same-origin only; service-worker update/offline reload, headers, caching, console/page errors, keyboard focus, dialogs, and axe serious/critical checks passed.
+## Cold first screen
 
-## Verification
+- Job: Play a 90-second daily tilt and touch obstacle run.
+- Audience: Phone players who want one short browser challenge without an install.
+- First action: **Try it with sample data**. It opens the sample run with touch and keys.
+- Fresh phone and desktop browsers showed the game board on the first screen before scrolling.
 
-Run from the repository root:
+## Repair
+
+- Added a 44 px minimum width and centered content to header and footer navigation links. Their existing 44 px minimum height remains unchanged.
+- Added an outcome-based Playwright regression. It opens `/demo` in a fresh 390 × 844 mobile touch context, measures every visible header and footer navigation link with `getBoundingClientRect()`, and requires both dimensions to be at least 44 CSS px.
+- Added `.factory/catalog-description.txt`: “Play a 90-second daily tilt and touch obstacle run.” It is 51 characters before its newline, starts with a verb, and was copied to `/work/.evidence/catalog-description.txt`.
+
+## Clean-checkout verification
+
+A clean detached checkout of the implementation SHA was installed with `npm ci` before verification.
 
 ```sh
 npm ci
@@ -25,20 +36,46 @@ npm test
 npm run build
 ```
 
-Results on 2026-09-02 UTC:
+Results on 2026-09-05 UTC:
 
-- See `.factory/verification-3.md` for the complete exact evidence, all 19 claim IDs, test output counts, live game flow, PWA/offline check, privacy traffic/header results, and the release blocker.
+- All 19 exact commands in `.factory/claims.json` passed individually.
+- `npm audit --omit=dev`: 0 vulnerabilities.
+- ESLint and strict TypeScript: passed.
+- Vitest: 6/6 passed.
+- Playwright Chromium 1.58.2: 23/23 passed.
+- The browser suite covers claims, deterministic end/restart, desktop/mobile layout, the new touch-target measurements, keyboard and dialogs, input fallbacks, demo isolation, offline reload, reduced motion, and axe checks.
+- Production build emitted 34,060 B JavaScript (11.08 kB gzip) and 16,147 B CSS (4.49 kB gzip). Self-hosted fonts total 69,852 B; the mobile hero is 11,204 B.
+- Lighthouse mobile: performance 93, accessibility 100, best practices 100, SEO 100; FCP 1.0 s, LCP 1.3 s, CLS 0.001.
 
-## Tested deployment
+## Live verification
 
-- Target: Azure Static Web App `sf-tilt-tag` in resource group `sociobot`.
-- Public URL: `https://tilt-tag.sociobot.in`.
-- Build output: `dist/`.
-- Tested candidate: `54340e5` (`fix: cover observable game claims`).
-- The live JS and CSS match the deployed local build exactly: JS SHA-256 `7cb8b5ee4d1e44a1147b86d3fc523e692236cb20cd7c22ec638c7a811a2c2865`; CSS SHA-256 `f7d2e5a864922674bd0c0269d596a9628c370f9f3281eb63a8eb2484913b5818`.
-- Live `/`, `/demo`, `/play`, `/privacy`, and `/terms` return 200; `/missing-page` returns the designed 404 with HTTP 404.
-- Live first-read, demo, desktop/mobile, keyboard, privacy, headers, caching, PWA, and scripted end/restart checks were completed as listed in `verification-3.md`.
+- `/opt/fleet/lib/verify-url.sh` passed over HTTPS: 782 ms load, correct title and language, one h1, a main landmark, complete image alt text, labelled buttons, and no console errors.
+- Fresh 390 × 844 mobile measurements: header Demo 44 × 44 px; footer Terms 44 × 44 px. The other visible navigation targets are also at least 44 × 44 px.
+- Fresh 1440 × 900 desktop and 390 × 844 mobile contexts had no unexpected console or page errors.
+- The one-click sample showed the persistent demo label, sample best score of 1,850, and a populated daily seed. The deterministic run reached `You scored 0` and `The 90-second run is complete. You tagged 0 targets.`
+- **Play again** reset the score to 0, shields to 3, and state to `playing`. **Reset demo** removed a demo-only marker while leaving a distinct real-game marker unchanged.
+- All requests during the mobile sample flow were same-origin. No analytics, third-party scripts, fonts, or trackers loaded.
+- Offline reload worked under service-worker control and showed the offline status.
+- Live axe checks found no serious or critical violations on `/`, `/demo`, `/play`, `/privacy`, and `/terms`.
+- `/privacy` and `/terms` returned 200 with route-specific titles. `/missing-page` returned the designed page with the expected HTTP 404 and route title.
+- Under 4× CPU throttling, live game-loop work measured 1.433 ms average and 2.200 ms p95 against the 20 ms claim ceiling.
+- Setup and pause dialogs retained focus through 20 Tab checks. Tilt calibration persisted across reload with beta offset 14.5 and gamma offset -6.25.
+- Live and local production assets are byte-identical: JavaScript SHA-256 `c2f081d336644b61e354c5806142a3ee31814de9063df9c4c9eadf0a1aaddd92`; CSS SHA-256 `8c47fdcf5261a867928b875d96b1555e0089cd02ec019343db4b88764c6171cc`.
+- CSP, HSTS, `nosniff`, `no-referrer`, and camera/microphone/geolocation-denying headers are present.
 
-## Required next step
+Evidence is in `/work/.evidence/tilt-tag-repair-3/`, including phone and desktop cold screenshots, the end-screen screenshot, browser report, prior-finding checks, URL verifier output, and Lighthouse JSON.
 
-Increase the clickable boxes for the header **Demo** link and footer **Terms** link to at least 44 × 44 CSS px at 390 px mobile, deploy, and rerun the mobile touch-target measurement. The native iOS motion-permission sheet also still needs a physical-device smoke test before broad launch.
+## Earlier findings
+
+All earlier verification findings remain repaired:
+
+- The first mobile screen contains the live board and touch pad.
+- The frame-work claim passes locally and live.
+- Setup, pause, settings, and end dialogs trap focus.
+- Accepted tilt calibration and center offsets persist after reload.
+- Every retained public promise has exactly one registered claim test; all 19 claim commands pass.
+- Opening hazards keep a deterministic clear lane for every 2026 daily seed covered by the unit regression.
+
+## Known gap
+
+Chromium verifies unavailable motion sensors, permission fallback, calibration, and restored calibration state. The native iOS motion-permission sheet still needs a physical-device smoke test before broad launch. No code, deployment, or automated-test defect remains open.
