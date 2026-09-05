@@ -332,6 +332,49 @@ test('@claim:tilt-control calibrated phone tilt moves the magnet', async ({ page
   await expect.poll(async () => Number(await board.getAttribute('data-player-x'))).toBeGreaterThan(before + 2);
 });
 
+test('@claim:motion-permission-request motion access waits for the tilt choice and denial keeps fallback controls', async ({ page }) => {
+  await page.addInitScript(() => {
+    class PermissionDeviceOrientationEvent extends Event {
+      beta: number | null;
+      gamma: number | null;
+
+      constructor(type: string, values: { beta?: number; gamma?: number } = {}) {
+        super(type);
+        this.beta = values.beta ?? null;
+        this.gamma = values.gamma ?? null;
+      }
+
+      static async requestPermission(): Promise<'denied'> {
+        (window as unknown as { __motionPermissionRequests: number }).__motionPermissionRequests += 1;
+        return 'denied';
+      }
+    }
+
+    Object.defineProperty(window, '__motionPermissionRequests', { configurable: true, value: 0, writable: true });
+    Object.defineProperty(window, 'DeviceOrientationEvent', {
+      configurable: true,
+      value: PermissionDeviceOrientationEvent,
+    });
+  });
+
+  await page.goto('/play');
+  await expect(page.getByRole('heading', { name: 'Set up this run' })).toBeVisible();
+  expect(await page.evaluate(() => (window as unknown as { __motionPermissionRequests: number }).__motionPermissionRequests)).toBe(0);
+
+  await page.getByRole('button', { name: 'Use phone tilt' }).click();
+  await expect.poll(() => page.evaluate(
+    () => (window as unknown as { __motionPermissionRequests: number }).__motionPermissionRequests,
+  )).toBe(1);
+  await expect(page.getByText('Tilt permission was not granted. Use touch or keys, or allow motion in browser settings.')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Use touch or keys' }).click();
+  await expect(page.locator('[data-board]')).toHaveAttribute('data-state', 'playing');
+  const before = Number(await page.locator('[data-board]').getAttribute('data-player-x'));
+  await page.keyboard.down('ArrowRight');
+  await expect.poll(async () => Number(await page.locator('[data-board]').getAttribute('data-player-x'))).toBeGreaterThan(before + 2);
+  await page.keyboard.up('ArrowRight');
+});
+
 test('@claim:touch-control dragging the movement pad moves the magnet', async ({ page }) => {
   await page.goto('/demo');
   const board = page.locator('[data-board]');

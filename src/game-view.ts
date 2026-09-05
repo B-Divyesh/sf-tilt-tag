@@ -222,7 +222,7 @@ export class GameView {
     if (view === 'setup') {
       overlay.innerHTML = `<div class="overlay-card" role="dialog" aria-modal="true" aria-labelledby="setup-title">
         <p class="eyebrow">Choose controls</p><h2 id="setup-title">Set up this run</h2>
-        <p>Tilt needs permission on some phones. Touch and keys always work.</p>
+        <p>Phone tilt asks this browser for motion access. Touch and keys always work.</p>
         ${this.optionsMarkup()}
         <div class="button-stack"><button class="primary-button" data-action="request-tilt">Use phone tilt</button><button class="secondary-button" data-action="start-touch">Use touch or keys</button></div>
         <p class="form-note" data-permission-note>${message}</p>

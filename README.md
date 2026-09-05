@@ -12,7 +12,7 @@ The demo starts one sample run with a sample best score. Its local storage keys 
 
 ## Controls and accessibility
 
-- Calibrate phone tilt on supported devices. iOS asks for motion permission after a button press.
+- Choose **Use phone tilt** to request motion access. If access is denied, use touch or keys.
 - Drag the on-screen movement pad on any pointer or touch device.
 - Choose arrow keys or W A S D. Press Escape to pause.
 - Switch on inversion, seated mode, or reduced motion before or during a run.

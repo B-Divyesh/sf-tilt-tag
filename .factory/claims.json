@@ -119,6 +119,13 @@
     "sandbox": "fresh real-mode browser; center synthetic orientation values, then change tilt and assert the magnet moves"
   },
   {
+    "id": "motion-permission-request",
+    "claim": "Motion access is requested only after the player chooses Use phone tilt, and denial leaves touch and keys available.",
+    "where": "play setup and README controls",
+    "test": "npx playwright test --grep '@claim:motion-permission-request'",
+    "sandbox": "fresh real-mode browser with the motion permission API instrumented; assert no request before the button press, one request after it, and a playable touch/key recovery after denial"
+  },
+  {
     "id": "touch-control",
     "claim": "The on-screen movement pad controls the magnet with pointer or touch input.",
     "where": "landing page, play page, and README controls",

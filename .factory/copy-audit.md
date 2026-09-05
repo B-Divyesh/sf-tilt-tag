@@ -1,6 +1,6 @@
 # Landing copy audit
 
-Audit date: 2026-09-05. Hyphenated terms count as one word. Navigation labels and button labels are included even when they are not full sentences. Repair 4 changed no landing copy; every line below was rechecked.
+Audit date: 2026-09-05. Hyphenated terms count as one word. Navigation labels and button labels are included even when they are not full sentences. Repair 5 changed no landing copy; every line below was rechecked.
 
 | Copy | Words | Result |
 | --- | ---: | --- |
