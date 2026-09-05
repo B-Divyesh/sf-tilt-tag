@@ -252,7 +252,7 @@ export class GameView {
         <p>${cause} You tagged ${this.state.targetsCollected} targets.</p>
         <dl><div><dt>Best</dt><dd>${this.progress.bestScore.toLocaleString()}</dd></div><div><dt>Daily seed</dt><dd>${seedLabel(this.state.seed)}</dd></div></dl>
         <div class="button-stack"><button class="primary-button" data-action="restart">Play again</button><button class="secondary-button" data-action="share">Share score</button></div>
-        <p class="form-note" data-share-note>${message}</p>
+        <p class="form-note" data-share-note role="status" aria-live="polite">${message}</p>
       </div>`;
     }
     requestAnimationFrame(() => overlay.querySelector<HTMLElement>('button')?.focus({ preventScroll: true }));

@@ -31,6 +31,57 @@ test('@claim:run-restart play again resets the run', async ({ page }) => {
   await expect(page.locator('[data-board]')).toHaveAttribute('data-state', 'playing');
 });
 
+test('@claim:score-sharing shares the displayed result and supports the clipboard fallback', async ({ browser }) => {
+  const shareContext = await browser.newContext();
+  await shareContext.addInitScript(() => {
+    Object.defineProperty(navigator, 'share', {
+      configurable: true,
+      value: async (data: ShareData) => {
+        (window as unknown as { __sharedScore: ShareData }).__sharedScore = data;
+      },
+    });
+  });
+  const sharePage = await shareContext.newPage();
+  await sharePage.goto('/demo?e2e=1');
+  const shareHeading = sharePage.getByRole('heading', { name: /You scored/ });
+  await expect(shareHeading).toBeVisible({ timeout: 5_000 });
+  const displayedScore = (await shareHeading.textContent())?.replace('You scored ', '') ?? '';
+  const displayedSeed = (await sharePage.locator('.result-card dd').nth(1).textContent()) ?? '';
+  await sharePage.getByRole('button', { name: 'Share score' }).click();
+  await expect(sharePage.locator('[data-share-note]')).toHaveText('Share sheet opened.');
+  const shared = await sharePage.evaluate(() => (window as unknown as { __sharedScore: ShareData }).__sharedScore);
+  expect(shared).toEqual({
+    title: 'Tilt Tag score',
+    text: `I scored ${displayedScore} in today's Tilt Tag run. Seed ${displayedSeed}.`,
+    url: 'https://tilt-tag.sociobot.in/demo',
+  });
+  await shareContext.close();
+
+  const copyContext = await browser.newContext();
+  await copyContext.addInitScript(() => {
+    Object.defineProperty(navigator, 'share', { configurable: true, value: undefined });
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText: async (value: string) => {
+          (window as unknown as { __copiedScore: string }).__copiedScore = value;
+        },
+      },
+    });
+  });
+  const copyPage = await copyContext.newPage();
+  await copyPage.goto('/demo?e2e=1');
+  const copyHeading = copyPage.getByRole('heading', { name: /You scored/ });
+  await expect(copyHeading).toBeVisible({ timeout: 5_000 });
+  const copiedScore = (await copyHeading.textContent())?.replace('You scored ', '') ?? '';
+  const copiedSeed = (await copyPage.locator('.result-card dd').nth(1).textContent()) ?? '';
+  await copyPage.getByRole('button', { name: 'Share score' }).click();
+  await expect(copyPage.locator('[data-share-note]')).toHaveText('Score copied.');
+  expect(await copyPage.evaluate(() => (window as unknown as { __copiedScore: string }).__copiedScore))
+    .toBe(`I scored ${copiedScore} in today's Tilt Tag run. Seed ${copiedSeed}. https://tilt-tag.sociobot.in/demo`);
+  await copyContext.close();
+});
+
 test('@claim:settings-persist controls work and settings persist', async ({ page }) => {
   await page.goto('/play');
   await page.getByLabel('Invert left and right').check();
@@ -121,6 +172,106 @@ test('@claim:no-device-access camera and location are never requested', async ({
   await page.waitForTimeout(250);
   const calls = await page.evaluate(() => (window as unknown as { __deviceCalls: { camera: number; location: number } }).__deviceCalls);
   expect(calls).toEqual({ camera: 0, location: 0 });
+});
+
+test('@claim:no-ads a complete sample run does not show or open advertising', async ({ page }) => {
+  const popups: string[] = [];
+  const requests: Array<{ method: string; type: string; url: string }> = [];
+  page.on('popup', (popup) => popups.push(popup.url()));
+  page.on('request', (request) => requests.push({
+    method: request.method(),
+    type: request.resourceType(),
+    url: request.url(),
+  }));
+
+  await page.goto('/?e2e=1');
+  await page.getByRole('link', { name: 'Try it with sample data' }).click();
+  await expect(page.getByRole('heading', { name: /You scored/ })).toBeVisible({ timeout: 5_000 });
+
+  await expect(page.locator('iframe, embed, object, [data-ad], [aria-label*="advertisement" i]')).toHaveCount(0);
+  const promotedDestinations = await page.locator('main a[href]').evaluateAll((links) => links
+    .map((link) => (link as HTMLAnchorElement).href)
+    .filter((href) => new URL(href).origin !== location.origin));
+  expect(promotedDestinations).toEqual([]);
+  expect(popups).toEqual([]);
+  expect(requests.length).toBeGreaterThan(0);
+  expect(requests.every((request) => request.method === 'GET')).toBe(true);
+  expect(requests.every((request) => new URL(request.url).origin === new URL(page.url()).origin)).toBe(true);
+  expect(requests.every((request) => ['document', 'script', 'stylesheet', 'font', 'image', 'other'].includes(request.type))).toBe(true);
+});
+
+test('@claim:no-analytics play does not emit telemetry', async ({ page }) => {
+  await page.addInitScript(() => {
+    const activity = { beacons: [] as string[], fetches: [] as string[], xhr: [] as string[] };
+    Object.defineProperty(window, '__networkActivity', { configurable: true, value: activity });
+    Object.defineProperty(navigator, 'sendBeacon', {
+      configurable: true,
+      value: (url: string | URL) => {
+        activity.beacons.push(String(url));
+        return true;
+      },
+    });
+    const nativeFetch = window.fetch.bind(window);
+    window.fetch = (input: RequestInfo | URL, init?: RequestInit) => {
+      activity.fetches.push(input instanceof Request ? input.url : String(input));
+      return nativeFetch(input, init);
+    };
+    const nativeOpen = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function open(this: XMLHttpRequest, method: string, url: string | URL, async = true, username?: string | null, password?: string | null) {
+      activity.xhr.push(`${method} ${String(url)}`);
+      Reflect.apply(nativeOpen, this, [method, String(url), async, username, password]);
+    };
+  });
+
+  const requests: Array<{ method: string; pathname: string }> = [];
+  page.on('request', (request) => requests.push({
+    method: request.method(),
+    pathname: new URL(request.url()).pathname,
+  }));
+  await page.goto('/demo?e2e=1');
+  await page.keyboard.press('ArrowRight');
+  await page.getByRole('button', { name: 'Pause' }).click();
+  await page.getByRole('button', { name: 'Resume run' }).click();
+  await expect(page.getByRole('heading', { name: /You scored/ })).toBeVisible({ timeout: 5_000 });
+
+  const activity = await page.evaluate(() => (window as unknown as {
+    __networkActivity: { beacons: string[]; fetches: string[]; xhr: string[] };
+  }).__networkActivity);
+  expect(activity).toEqual({ beacons: [], fetches: [], xhr: [] });
+  expect(requests.every((request) => request.method === 'GET')).toBe(true);
+  expect(requests.every((request) => request.pathname === '/' || request.pathname === '/demo'
+    || request.pathname === '/sw.js' || request.pathname === '/site.webmanifest'
+    || request.pathname === '/favicon.svg' || request.pathname.startsWith('/assets/')
+    || request.pathname.startsWith('/fonts/'))).toBe(true);
+  expect(await page.evaluate(() => document.cookie)).toBe('');
+  expect(await page.evaluate(() => Object.keys(localStorage).every((key) => key.startsWith('demo:tilt-tag:')))).toBe(true);
+});
+
+test('@claim:no-public-leaderboards a finished score is not published to another player', async ({ browser }) => {
+  const firstContext = await browser.newContext();
+  const writes: Array<{ method: string; url: string }> = [];
+  firstContext.on('request', (request) => {
+    if (request.method() !== 'GET') writes.push({ method: request.method(), url: request.url() });
+  });
+  const firstPage = await firstContext.newPage();
+  await firstPage.goto('/demo?e2e=1');
+  await expect(firstPage.getByRole('heading', { name: /You scored/ })).toBeVisible({ timeout: 5_000 });
+  const firstProgress = await firstPage.evaluate(() => localStorage.getItem('demo:tilt-tag:progress'));
+  expect(firstProgress).not.toBeNull();
+  await expect(firstPage.getByRole('link', { name: /leaderboard|ranking/i })).toHaveCount(0);
+  await expect(firstPage.getByRole('button', { name: /leaderboard|ranking/i })).toHaveCount(0);
+  expect(writes).toEqual([]);
+
+  const secondContext = await browser.newContext();
+  const secondPage = await secondContext.newPage();
+  await secondPage.goto('/demo');
+  await expect(secondPage.locator('[data-best]')).toHaveText('1,850');
+  expect(await secondPage.evaluate(() => localStorage.getItem('demo:tilt-tag:progress'))).toBeNull();
+  await expect(secondPage.getByRole('link', { name: /leaderboard|ranking/i })).toHaveCount(0);
+  await expect(secondPage.getByRole('button', { name: /leaderboard|ranking/i })).toHaveCount(0);
+
+  await firstContext.close();
+  await secondContext.close();
 });
 
 test('@claim:offline-reload works offline after the first visit', async ({ browser }) => {

@@ -35,6 +35,13 @@
     "sandbox": "demo end screen; press Play again and assert zero score, three shields, and playing state"
   },
   {
+    "id": "score-sharing",
+    "claim": "A finished score and daily seed can be shared with the demo link.",
+    "where": "game end screen and terms page",
+    "test": "npx playwright test --grep '@claim:score-sharing'",
+    "sandbox": "two fresh demo contexts at the score summary; assert the system share payload and clipboard fallback each contain the displayed score, seed, and demo URL"
+  },
+  {
     "id": "settings-persist",
     "claim": "Control settings stay on this device.",
     "where": "landing page, privacy page, and README",
@@ -68,6 +75,27 @@
     "where": "landing page",
     "test": "npx playwright test --grep '@claim:no-device-access'",
     "sandbox": "fresh demo context with camera and location methods instrumented before page scripts run"
+  },
+  {
+    "id": "no-ads",
+    "claim": "Tilt Tag does not show ads.",
+    "where": "landing page and privacy page",
+    "test": "npx playwright test --grep '@claim:no-ads'",
+    "sandbox": "fresh one-click demo through the score summary; assert no ad surfaces, promoted destinations, pop-ups, frames, or non-product resources appear"
+  },
+  {
+    "id": "no-analytics",
+    "claim": "Tilt Tag does not send analytics.",
+    "where": "privacy page and README",
+    "test": "npx playwright test --grep '@claim:no-analytics'",
+    "sandbox": "fresh demo through movement, pause, resume, and completion; instrument beacons, fetch, XHR, cookies, storage, and requests and assert no telemetry leaves"
+  },
+  {
+    "id": "no-public-leaderboards",
+    "claim": "Tilt Tag does not publish scores to a public leaderboard.",
+    "where": "landing page",
+    "test": "npx playwright test --grep '@claim:no-public-leaderboards'",
+    "sandbox": "complete a run in one fresh demo context; assert no network write or ranking UI and verify a second context cannot observe the first context's saved result"
   },
   {
     "id": "offline-reload",
