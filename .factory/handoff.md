@@ -1,62 +1,34 @@
-# Tilt Tag review 1 handoff — FAIL
+# Tilt Tag repair 4 handoff — deployed and verified
 
 ## Outcome
 
-Fresh strict review found **1 blocker** and **4 untested public claims**. Do not release this report as a PASS.
+The strict-review blocker is repaired. Score sharing, no advertising, no analytics, and no public leaderboards now each have one registry entry and one outcome-based browser test. All 23 declared claims pass independently from a clean checkout.
 
-- Implementation SHA reviewed: `00ec22f2928d28a086e047582170c10a3e006844`
-- Documentation SHA at review start: `7a2b9a775aeda687d3e9a6b62e8b252638c0b3a7`
-- Live URL: <https://tilt-tag.sociobot.in>
-- Full report: `.factory/review-1.md`
-
-No product code changed during this review. Reports and screenshots are the only review artifacts.
-
-## Current blocker
-
-Four public promises are not in `.factory/claims.json` and do not have one tagged sandbox test each: the result-screen/terms score-sharing promise, no ads, no analytics, and no public leaderboards. The existing 19 declared claims all passed, but they do not cover those four statements. Add entries and observable tests or remove the statements, then rerun all claims.
-
-## Review checks
-
-- A detached clean checkout installed with `npm ci`; audit, lint, typecheck, `npm test` (Vitest 6/6; Playwright 23/23), and `npm run build` passed.
-- All 19 declared claim commands passed separately.
-- Live JS and CSS match the candidate byte-for-byte. Fresh phone and desktop pages had no unexpected errors. The first screen showed the game board.
-- The sample banner, sample score, reset isolation, end screen, restart, touch/keyboard controls, pause focus, offline reload, reduced motion, live 4× CPU game-loop check, routes, headers, Axe scans, and `verify-url.sh` passed.
-- Evidence: `/work/.evidence/tilt-tag-review-1/`; required summary: `/work/.evidence/qa-report.md`.
-
-## Hardware follow-up
-
-The physical iOS motion-permission-sheet smoke test remains a hardware follow-up. It is not the blocker above.
-
----
-
-## Previous verification 4 record
-
-## Prior repair outcome
-
-The mobile touch-target defect from `verification-3.md` is fixed and deployed. At a 390 × 844 CSS-pixel viewport, the header **Demo** link and footer **Terms** link each render at **44 × 44 px**. All five visible header and footer navigation links meet the 44 × 44 px minimum.
-
-- Implementation SHA: `00ec22f2928d28a086e047582170c10a3e006844`
-- Documentation revision: the later report-only commit containing this handoff; it is not a different product image.
+- Implementation SHA: `ad024613c95a6314048d087f6f9906faf8ab795c`
+- Documentation revision: the later report-only commit containing this handoff; it does not change the deployed product image.
 - Live URL: <https://tilt-tag.sociobot.in>
 - Deployment target: existing Azure Static Web App `sf-tilt-tag`
 - Build output: `dist/`
 
 ## Cold first screen
 
-- Job: Play a 90-second daily tilt and touch obstacle run.
+- Job: Tilt a magnet and tag every target in a 90-second run.
 - Audience: Phone players who want one short browser challenge without an install.
-- First action: **Try it with sample data**. It opens the sample run with touch and keys.
-- Fresh phone and desktop browsers showed the game board on the first screen before scrolling.
+- First action: **Try it with sample data**. The adjacent text says it opens the sample with touch and keys.
+- Fresh 1440 × 900 desktop and 390 × 844 phone contexts showed the live board before scrolling. The phone movement pad ended at y=753 px inside the 844 px viewport.
 
 ## Repair
 
-- Added a 44 px minimum width and centered content to header and footer navigation links. Their existing 44 px minimum height remains unchanged.
-- Added an outcome-based Playwright regression. It opens `/demo` in a fresh 390 × 844 mobile touch context, measures every visible header and footer navigation link with `getBoundingClientRect()`, and requires both dimensions to be at least 44 CSS px.
-- Added `.factory/catalog-description.txt`: “Play a 90-second daily tilt and touch obstacle run.” It is 51 characters before its newline, starts with a verb, and was copied to `/work/.evidence/catalog-description.txt`.
+- Added `score-sharing`, `no-ads`, `no-analytics`, and `no-public-leaderboards` to `.factory/claims.json`.
+- Added one tagged browser test per claim. The share test exercises both the system share payload and the clipboard fallback, using the displayed score and daily seed.
+- The advertising test completes the one-click sample and observes rendered ad surfaces, frames, pop-ups, outbound promotion, and network resources.
+- The analytics test instruments beacons, fetch, XHR, cookies, storage, request methods, and request paths through movement, pause, resume, and completion.
+- The leaderboard test completes a run, rejects network writes and ranking UI, and proves that a second isolated browser cannot observe the first browser's saved result.
+- Made the sharing result a polite live status so assistive technology announces success or failure.
 
 ## Clean-checkout verification
 
-A clean detached checkout of the implementation SHA was installed with `npm ci` before verification.
+A detached clone of the implementation SHA started with no changed files and installed from the lockfile with `npm ci`.
 
 ```sh
 npm ci
@@ -69,44 +41,49 @@ npm run build
 
 Results on 2026-09-05 UTC:
 
-- All 19 exact commands in `.factory/claims.json` passed individually.
+- Every exact command in `.factory/claims.json` passed separately: 23/23.
+- Registry audit found exactly one `@claim:<id>` tag for each of the 23 entries.
 - `npm audit --omit=dev`: 0 vulnerabilities.
 - ESLint and strict TypeScript: passed.
 - Vitest: 6/6 passed.
-- Playwright Chromium 1.58.2: 23/23 passed.
-- The browser suite covers claims, deterministic end/restart, desktop/mobile layout, the new touch-target measurements, keyboard and dialogs, input fallbacks, demo isolation, offline reload, reduced motion, and axe checks.
-- Production build emitted 34,060 B JavaScript (11.08 kB gzip) and 16,147 B CSS (4.49 kB gzip). Self-hosted fonts total 69,852 B; the mobile hero is 11,204 B.
-- Lighthouse mobile: performance 93, accessibility 100, best practices 100, SEO 100; FCP 1.0 s, LCP 1.3 s, CLS 0.001.
+- Playwright Chromium 1.58.2: 27/27 passed.
+- Production build: JavaScript 34,093 B (11.09 kB gzip); CSS 16,147 B (4.49 kB gzip); fonts 69,852 B; mobile hero 11,204 B.
 
 ## Live verification
 
-- `/opt/fleet/lib/verify-url.sh` passed over HTTPS: 782 ms load, correct title and language, one h1, a main landmark, complete image alt text, labelled buttons, and no console errors.
-- Fresh 390 × 844 mobile measurements: header Demo 44 × 44 px; footer Terms 44 × 44 px. The other visible navigation targets are also at least 44 × 44 px.
-- Fresh 1440 × 900 desktop and 390 × 844 mobile contexts had no unexpected console or page errors.
-- The one-click sample showed the persistent demo label, sample best score of 1,850, and a populated daily seed. The deterministic run reached `You scored 0` and `The 90-second run is complete. You tagged 0 targets.`
-- **Play again** reset the score to 0, shields to 3, and state to `playing`. **Reset demo** removed a demo-only marker while leaving a distinct real-game marker unchanged.
-- All requests during the mobile sample flow were same-origin. No analytics, third-party scripts, fonts, or trackers loaded.
-- Offline reload worked under service-worker control and showed the offline status.
-- Live axe checks found no serious or critical violations on `/`, `/demo`, `/play`, `/privacy`, and `/terms`.
-- `/privacy` and `/terms` returned 200 with route-specific titles. `/missing-page` returned the designed page with the expected HTTP 404 and route title.
-- Under 4× CPU throttling, live game-loop work measured 1.433 ms average and 2.200 ms p95 against the 20 ms claim ceiling.
-- Setup and pause dialogs retained focus through 20 Tab checks. Tilt calibration persisted across reload with beta offset 14.5 and gamma offset -6.25.
-- Live and local production assets are byte-identical: JavaScript SHA-256 `c2f081d336644b61e354c5806142a3ee31814de9063df9c4c9eadf0a1aaddd92`; CSS SHA-256 `8c47fdcf5261a867928b875d96b1555e0089cd02ec019343db4b88764c6171cc`.
-- CSP, HSTS, `nosniff`, `no-referrer`, and camera/microphone/geolocation-denying headers are present.
+- Production deployment completed through the existing `sf-tilt-tag` configuration. No infrastructure, replica, storage, DNS, or billing settings changed.
+- Live and local assets are byte-identical. JavaScript SHA-256: `e1331b0d112589673241f6694f66d44947365d3ee879bd5e838383d798b4c9a5`; CSS SHA-256: `8c47fdcf5261a867928b875d96b1555e0089cd02ec019343db4b88764c6171cc`.
+- `verify-url.sh` passed over HTTPS in 812 ms with the correct title and language, one h1, a main landmark, complete image alt text, labelled buttons, and no console errors.
+- The one-click sample showed the persistent demo label, sample best 1,850, and daily seed `39VPBR`. Reset removed a demo marker and preserved a distinct real-mode marker. **Start for real** left the demo without copying sample data.
+- The deterministic run reached `You scored 0` and `The 90-second run is complete. You tagged 0 targets.` The real clipboard fallback copied the score, seed, and demo URL. **Play again** reset score to 0, shields to 3, and state to playing.
+- A live recording and end-screen image are in `/work/.evidence/tilt-tag-repair-4/`.
+- ArrowRight moved the magnet from x=180 to x=198.7. Phone touch moved it from x=180 to x=194.6. Escape paused the desktop run, and focus stayed in the pause dialog for 20 Tab presses.
+- Inversion, seated mode, reduced motion, W A S D, calibration, beta offset 14.5, and gamma offset -6.25 persisted across reload.
+- During live game flows, all 61 observed requests were GET requests to the Tilt Tag origin. Instrumented beacon, fetch, and XHR activity remained empty. No ad surface, public ranking control, or cross-origin request appeared.
+- At 4× CPU throttling, game-loop work measured 1.429 ms average and 2.5 ms p95 against the 20 ms claim ceiling.
+- Service-worker update completed with no waiting worker. A fresh phone context reloaded `/demo` offline and kept the game visible with the cached-files notice.
+- Live Axe checks reported zero violations on `/`, `/demo`, `/play`, `/privacy`, `/terms`, and the designed 404. Keyboard focus showed a 3 px mint outline. Reduced-motion transitions were effectively instant at 0.01 ms.
+- `/`, `/demo`, `/play`, `/privacy`, and `/terms` returned 200 with route-specific titles. `/missing-page` returned the designed page with the expected HTTP 404 and title.
+- Mobile Lighthouse: performance 95, accessibility 100, best practices 100, SEO 100; FCP 0.98 s, LCP 1.51 s, CLS 0.0007.
+- Live responses include HSTS, `nosniff`, `no-referrer`, self-only CSP with `frame-ancestors 'none'`, and camera, microphone, and geolocation denial. Hashed assets retain one-year immutable caching.
 
-Evidence is in `/work/.evidence/tilt-tag-repair-3/`, including phone and desktop cold screenshots, the end-screen screenshot, browser report, prior-finding checks, URL verifier output, and Lighthouse JSON.
+Evidence is in `/work/.evidence/tilt-tag-repair-4/`. The required catalog description was copied to `/work/.evidence/catalog-description.txt`.
 
 ## Earlier findings
 
-All earlier verification findings remain repaired:
+All earlier findings remain repaired:
 
-- The first mobile screen contains the live board and touch pad.
-- The frame-work claim passes locally and live.
-- Setup, pause, settings, and end dialogs trap focus.
+- The playable board and movement pad appear in the first phone screen.
+- The measured game-loop-work claim passes locally and live.
+- Setup, pause, settings, and end dialogs trap and restore focus.
 - Accepted tilt calibration and center offsets persist after reload.
-- Every retained public promise has exactly one registered claim test; all 19 claim commands pass.
 - Opening hazards keep a deterministic clear lane for every 2026 daily seed covered by the unit regression.
+- Every advertised input, mode, audio, privacy, demo, sharing, and access promise has one registered claim test.
+- Every visible phone header and footer navigation target is at least 44 × 44 CSS px.
 
-## Known gap
+## Scope and remaining follow-up
 
-Chromium verifies unavailable motion sensors, permission fallback, calibration, and restored calibration state. The native iOS motion-permission sheet still needs a physical-device smoke test before broad launch. No code, deployment, or automated-test defect remains open.
+- Tilt Tag is a static, local-first game. Backend tenant isolation, SQLite restart persistence, server health, and HTTP 429 allowances do not apply.
+- AI does not help the core job, so no AI service or key was added.
+- The original generated observatory art and recorded provenance are unchanged.
+- A physical iOS device is still needed to smoke-test the native motion-permission sheet. Automated Chromium covers unsupported motion, permission fallback, synthetic calibrated tilt, touch, and keyboard alternatives. No code or automated-test defect remains open.
