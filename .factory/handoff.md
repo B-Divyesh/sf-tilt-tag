@@ -1,34 +1,35 @@
-# Tilt Tag repair 4 handoff — deployed and verified
+# Tilt Tag verification 5 handoff — FAIL
 
-## Outcome
+## Result
 
-The strict-review blocker is repaired. Score sharing, no advertising, no analytics, and no public leaderboards now each have one registry entry and one outcome-based browser test. All 23 declared claims pass independently from a clean checkout.
+Independent QA reviewed implementation `ad024613c95a6314048d087f6f9906faf8ab795c` and documentation revision `893a930576b229903bfc088eb1a9b63291946e4c` at <https://tilt-tag.sociobot.in>.
 
-- Implementation SHA: `ad024613c95a6314048d087f6f9906faf8ab795c`
-- Documentation revision: the later report-only commit containing this handoff; it does not change the deployed product image.
-- Live URL: <https://tilt-tag.sociobot.in>
-- Deployment target: existing Azure Static Web App `sf-tilt-tag`
-- Build output: `dist/`
+- Verdict: **FAIL**
+- Findings: **1**
+- Untested public claims: **1**
+- Product code changed: **no**
 
-## Cold first screen
+All executable checks passed. The only blocker is the public README statement that physical iOS shows its native motion-permission sheet after the player presses **Use phone tilt**. This environment had no physical iOS device, so that operating-system sheet remains untested. Synthetic tilt, calibration persistence, denied-permission recovery, touch, and keyboard alternatives passed.
 
-- Job: Tilt a magnet and tag every target in a 90-second run.
-- Audience: Phone players who want one short browser challenge without an install.
-- First action: **Try it with sample data**. The adjacent text says it opens the sample with touch and keys.
-- Fresh 1440 × 900 desktop and 390 × 844 phone contexts showed the live board before scrolling. The phone movement pad ended at y=753 px inside the 844 px viewport.
+The full report is [verification-5.md](verification-5.md).
 
-## Repair
+## Verification completed
 
-- Added `score-sharing`, `no-ads`, `no-analytics`, and `no-public-leaderboards` to `.factory/claims.json`.
-- Added one tagged browser test per claim. The share test exercises both the system share payload and the clipboard fallback, using the displayed score and daily seed.
-- The advertising test completes the one-click sample and observes rendered ad surfaces, frames, pop-ups, outbound promotion, and network resources.
-- The analytics test instruments beacons, fetch, XHR, cookies, storage, request methods, and request paths through movement, pause, resume, and completion.
-- The leaderboard test completes a run, rejects network writes and ranking UI, and proves that a second isolated browser cannot observe the first browser's saved result.
-- Made the sharing result a polite live status so assistive technology announces success or failure.
+- Fresh remote clone detached at `ad02461`; `npm ci` and `npm audit --omit=dev` passed.
+- All 23 exact `.factory/claims.json` commands passed separately.
+- Claim registry audit found exactly one tagged test per entry.
+- `npm run lint`, `npm run typecheck`, `npm test`, and `npm run build` passed.
+- Test totals: 6 unit and 27 browser tests.
+- Fresh desktop and 390 × 844 phone contexts showed the game before scrolling.
+- One-click demo, sample label and data, reset isolation, Start for real, deterministic end screen, restart, keyboard, touch, synthetic tilt, settings, focus, recovery, offline/update, legal pages, route titles, designed 404, privacy instrumentation, and links passed.
+- Live Axe reported zero violations on every public route and the designed 404.
+- Live game-loop work at 4× CPU throttling: 1.007 ms average, 1.8 ms p95.
+- Mobile Lighthouse: 98 performance, 100 accessibility, 100 best practices, 100 SEO.
+- Live JavaScript and CSS are byte-identical to the implementation build.
 
-## Clean-checkout verification
+## Reproduce
 
-A detached clone of the implementation SHA started with no changed files and installed from the lockfile with `npm ci`.
+From a clean checkout of the implementation SHA:
 
 ```sh
 npm ci
@@ -39,51 +40,23 @@ npm test
 npm run build
 ```
 
-Results on 2026-09-05 UTC:
+Run each `test` value in `.factory/claims.json` separately for the strict claim audit.
 
-- Every exact command in `.factory/claims.json` passed separately: 23/23.
-- Registry audit found exactly one `@claim:<id>` tag for each of the 23 entries.
-- `npm audit --omit=dev`: 0 vulnerabilities.
-- ESLint and strict TypeScript: passed.
-- Vitest: 6/6 passed.
-- Playwright Chromium 1.58.2: 27/27 passed.
-- Production build: JavaScript 34,093 B (11.09 kB gzip); CSS 16,147 B (4.49 kB gzip); fonts 69,852 B; mobile hero 11,204 B.
+## Required next step
 
-## Live verification
+Use a physical iPhone with Safari over HTTPS:
 
-- Production deployment completed through the existing `sf-tilt-tag` configuration. No infrastructure, replica, storage, DNS, or billing settings changed.
-- Live and local assets are byte-identical. JavaScript SHA-256: `e1331b0d112589673241f6694f66d44947365d3ee879bd5e838383d798b4c9a5`; CSS SHA-256: `8c47fdcf5261a867928b875d96b1555e0089cd02ec019343db4b88764c6171cc`.
-- `verify-url.sh` passed over HTTPS in 812 ms with the correct title and language, one h1, a main landmark, complete image alt text, labelled buttons, and no console errors.
-- The one-click sample showed the persistent demo label, sample best 1,850, and daily seed `39VPBR`. Reset removed a demo marker and preserved a distinct real-mode marker. **Start for real** left the demo without copying sample data.
-- The deterministic run reached `You scored 0` and `The 90-second run is complete. You tagged 0 targets.` The real clipboard fallback copied the score, seed, and demo URL. **Play again** reset score to 0, shields to 3, and state to playing.
-- A live recording and end-screen image are in `/work/.evidence/tilt-tag-repair-4/`.
-- ArrowRight moved the magnet from x=180 to x=198.7. Phone touch moved it from x=180 to x=194.6. Escape paused the desktop run, and focus stayed in the pause dialog for 20 Tab presses.
-- Inversion, seated mode, reduced motion, W A S D, calibration, beta offset 14.5, and gamma offset -6.25 persisted across reload.
-- During live game flows, all 61 observed requests were GET requests to the Tilt Tag origin. Instrumented beacon, fetch, and XHR activity remained empty. No ad surface, public ranking control, or cross-origin request appeared.
-- At 4× CPU throttling, game-loop work measured 1.429 ms average and 2.5 ms p95 against the 20 ms claim ceiling.
-- Service-worker update completed with no waiting worker. A fresh phone context reloaded `/demo` offline and kept the game visible with the cached-files notice.
-- Live Axe checks reported zero violations on `/`, `/demo`, `/play`, `/privacy`, `/terms`, and the designed 404. Keyboard focus showed a 3 px mint outline. Reduced-motion transitions were effectively instant at 0.01 ms.
-- `/`, `/demo`, `/play`, `/privacy`, and `/terms` returned 200 with route-specific titles. `/missing-page` returned the designed page with the expected HTTP 404 and title.
-- Mobile Lighthouse: performance 95, accessibility 100, best practices 100, SEO 100; FCP 0.98 s, LCP 1.51 s, CLS 0.0007.
-- Live responses include HSTS, `nosniff`, `no-referrer`, self-only CSP with `frame-ancestors 'none'`, and camera, microphone, and geolocation denial. Hashed assets retain one-year immutable caching.
+1. Open `https://tilt-tag.sociobot.in/play` with clean site permissions.
+2. Confirm no motion prompt appears before interaction.
+3. Press **Use phone tilt** and confirm the native permission sheet appears.
+4. Grant access, center the phone, and confirm tilt moves the magnet.
+5. Repeat from clean permissions, deny access, and confirm touch/key recovery remains usable.
 
-Evidence is in `/work/.evidence/tilt-tag-repair-4/`. The required catalog description was copied to `/work/.evidence/catalog-description.txt`.
+If all five checks pass, update verification with the physical-device evidence and rerun the acceptance verdict. No code repair is requested from this report.
 
-## Earlier findings
+## Evidence
 
-All earlier findings remain repaired:
-
-- The playable board and movement pad appear in the first phone screen.
-- The measured game-loop-work claim passes locally and live.
-- Setup, pause, settings, and end dialogs trap and restore focus.
-- Accepted tilt calibration and center offsets persist after reload.
-- Opening hazards keep a deterministic clear lane for every 2026 daily seed covered by the unit regression.
-- Every advertised input, mode, audio, privacy, demo, sharing, and access promise has one registered claim test.
-- Every visible phone header and footer navigation target is at least 44 × 44 CSS px.
-
-## Scope and remaining follow-up
-
-- Tilt Tag is a static, local-first game. Backend tenant isolation, SQLite restart persistence, server health, and HTTP 429 allowances do not apply.
-- AI does not help the core job, so no AI service or key was added.
-- The original generated observatory art and recorded provenance are unchanged.
-- A physical iOS device is still needed to smoke-test the native motion-permission sheet. Automated Chromium covers unsupported motion, permission fallback, synthetic calibrated tilt, touch, and keyboard alternatives. No code or automated-test defect remains open.
+- Verification evidence: `/work/.evidence/tilt-tag-verify-5/`
+- Recorded run: `/work/.evidence/tilt-tag-verify-5/deterministic-run.webm`
+- Required report copy: `/work/.evidence/qa-report.md`
+- Required result file: `/work/.evidence/qa-result.json`
