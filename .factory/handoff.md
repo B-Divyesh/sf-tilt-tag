@@ -1,15 +1,35 @@
-# Tilt Tag verification 4 handoff — PASS
+# Tilt Tag review 1 handoff — FAIL
 
 ## Outcome
 
-Independent verification passed with **0 findings** and **0 untested declared claims**.
+Fresh strict review found **1 blocker** and **4 untested public claims**. Do not release this report as a PASS.
 
 - Implementation SHA reviewed: `00ec22f2928d28a086e047582170c10a3e006844`
-- Documentation SHA reviewed: `0297c4d2f80d1f6b07b8b1c01aba8e5c068ae163`
+- Documentation SHA at review start: `7a2b9a775aeda687d3e9a6b62e8b252638c0b3a7`
 - Live URL: <https://tilt-tag.sociobot.in>
-- Full report: `.factory/verification-4.md`
+- Full report: `.factory/review-1.md`
 
-No product code changed during this verification. Reports and screenshots are the only verification artifacts.
+No product code changed during this review. Reports and screenshots are the only review artifacts.
+
+## Current blocker
+
+Four public promises are not in `.factory/claims.json` and do not have one tagged sandbox test each: the result-screen/terms score-sharing promise, no ads, no analytics, and no public leaderboards. The existing 19 declared claims all passed, but they do not cover those four statements. Add entries and observable tests or remove the statements, then rerun all claims.
+
+## Review checks
+
+- A detached clean checkout installed with `npm ci`; audit, lint, typecheck, `npm test` (Vitest 6/6; Playwright 23/23), and `npm run build` passed.
+- All 19 declared claim commands passed separately.
+- Live JS and CSS match the candidate byte-for-byte. Fresh phone and desktop pages had no unexpected errors. The first screen showed the game board.
+- The sample banner, sample score, reset isolation, end screen, restart, touch/keyboard controls, pause focus, offline reload, reduced motion, live 4× CPU game-loop check, routes, headers, Axe scans, and `verify-url.sh` passed.
+- Evidence: `/work/.evidence/tilt-tag-review-1/`; required summary: `/work/.evidence/qa-report.md`.
+
+## Hardware follow-up
+
+The physical iOS motion-permission-sheet smoke test remains a hardware follow-up. It is not the blocker above.
+
+---
+
+## Previous verification 4 record
 
 ## Prior repair outcome
 
