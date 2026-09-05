@@ -200,6 +200,8 @@ p {
 }
 
 .site-header nav a {
+  justify-content: center;
+  min-width: 44px;
   min-height: 44px;
   display: inline-flex;
   align-items: center;
@@ -534,6 +536,8 @@ p {
 .site-footer nav a {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  min-width: 44px;
   min-height: 44px;
   color: var(--mist);
 }

@@ -332,6 +332,29 @@ test('mobile layout stays inside the viewport and navigation works', async ({ pa
   await expect(page.locator('[data-game-canvas]')).toBeVisible();
 });
 
+test('mobile navigation links provide 44px touch targets', async ({ browser }) => {
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    hasTouch: true,
+    isMobile: true,
+  });
+  const page = await context.newPage();
+  await page.goto('/demo');
+  const targets = page.locator('.site-header nav a:visible, .site-footer nav a:visible');
+  await expect(targets).toHaveCount(5);
+
+  for (let index = 0; index < await targets.count(); index += 1) {
+    const target = targets.nth(index);
+    const label = (await target.textContent())?.trim() || `navigation link ${index + 1}`;
+    const bounds = await target.boundingBox();
+    expect(bounds, `${label} should have a rendered touch target`).not.toBeNull();
+    expect(bounds!.width, `${label} touch-target width`).toBeGreaterThanOrEqual(44);
+    expect(bounds!.height, `${label} touch-target height`).toBeGreaterThanOrEqual(44);
+  }
+
+  await context.close();
+});
+
 test('setup, pause, settings, and end dialogs trap and restore focus', async ({ page }) => {
   const assertFocusStaysInDialog = async (tabs: number) => {
     for (let index = 0; index < tabs; index += 1) {
