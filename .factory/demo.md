@@ -14,7 +14,7 @@ The demo starts today's deterministic field immediately. It includes a sample be
 
 ## Isolation and reset
 
-Demo reads and writes only local storage keys prefixed with `demo:tilt-tag:`. It never reads or changes the real `tilt-tag:` namespace. **Reset demo** deletes the demo prefix and starts a clean sample run. **Start for real** leaves the sandbox; demo values are not copied.
+Demo reads and writes only local storage keys prefixed with `demo:tilt-tag:`. It never reads or changes the real `tilt-tag:` namespace. **Reset demo** deletes the demo prefix and starts a clean sample run. **Start for real** discards the demo prefix before opening the real game.
 
 The service worker caches the same demo entry point and bundled sample state. After one online visit, the demo reloads offline.
 

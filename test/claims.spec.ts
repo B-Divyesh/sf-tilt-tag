@@ -462,7 +462,7 @@ test('@claim:audio-mute-persistence sound waits for input and mute survives relo
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('demo:tilt-tag:settings') ?? '{}').mute)).toBe(true);
 });
 
-test('@claim:demo-reset-isolation demo ignores real storage and reset leaves it intact', async ({ page }) => {
+test('@claim:demo-reset-isolation demo ignores real storage, and both reset and exit leave it intact', async ({ page }) => {
   const realSettings = {
     mode: 'tilt', invertX: true, seated: true, reducedMotion: true, mute: true, keySet: 'wasd', calibrated: true, betaOffset: 19, gammaOffset: -8,
   };
@@ -478,6 +478,16 @@ test('@claim:demo-reset-isolation demo ignores real storage and reset leaves it 
   await page.getByRole('button', { name: 'Reset demo' }).click();
   await expect(page.getByText('Demo reset')).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem('demo:tilt-tag:reset-marker'))).toBeNull();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('tilt-tag:settings') ?? '{}'))).toEqual(realSettings);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('tilt-tag:progress') ?? '{}'))).toEqual({ bestScore: 99999, totalRuns: 7, lastScore: 777 });
+
+  await page.evaluate(() => {
+    localStorage.setItem('demo:tilt-tag:exit-marker', 'discard me');
+    localStorage.setItem('demo:tilt-tag:run', JSON.stringify({ status: 'paused', score: 250 }));
+  });
+  await page.getByRole('link', { name: 'Start for real' }).click();
+  await expect(page).toHaveURL(/\/play$/);
+  expect(await page.evaluate(() => Object.keys(localStorage).filter((key) => key.startsWith('demo:tilt-tag:')))).toEqual([]);
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('tilt-tag:settings') ?? '{}'))).toEqual(realSettings);
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('tilt-tag:progress') ?? '{}'))).toEqual({ bestScore: 99999, totalRuns: 7, lastScore: 777 });
 });

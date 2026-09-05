@@ -8,7 +8,7 @@ Each run starts with three shields. Collect round mint targets for points and av
 
 Open `/demo` or `/?demo=1`. The hosted URL is <https://tilt-tag.sociobot.in/demo>.
 
-The demo starts one sample run with a sample best score. Its local storage keys start with `demo:tilt-tag:`. **Reset demo** removes those keys, and demo mode never reads or changes real game keys.
+The demo starts one sample run with a sample best score. Its local storage keys start with `demo:tilt-tag:`. **Reset demo** and **Start for real** remove those keys, and demo mode never reads or changes real game keys.
 
 ## Controls and accessibility
 

@@ -77,7 +77,7 @@ function footer(): string {
 function demoBanner(): string {
   return `<aside class="demo-banner" aria-label="Demo mode">
     <p><strong>Demo</strong> — sample data, nothing is saved to your real game.</p>
-    <div><button type="button" class="text-button light" data-reset-demo>Reset demo</button><a href="/play" data-link>Start for real</a></div>
+    <div><button type="button" class="text-button light" data-reset-demo>Reset demo</button><a href="/play" data-link data-exit-demo>Start for real</a></div>
   </aside>`;
 }
 
@@ -146,7 +146,7 @@ function privacyPage(): string {
     <p class="lede">Tilt Tag has no account system, advertising, or analytics.</p>
     <h2>What the game stores</h2><p>The browser stores your best score, run count, control settings, and an unfinished run. This data stays in local storage on your device.</p>
     <h2>Motion data</h2><p>Live phone orientation readings move the magnet while you play. The game does not save or send them. Your chosen center offsets stay with your control settings.</p>
-    <h2>Demo data</h2><p>The demo uses keys that start with <code>demo:tilt-tag:</code>. It never reads or changes your real game keys. Reset demo removes only those demo keys.</p>
+    <h2>Demo data</h2><p>The demo uses keys that start with <code>demo:tilt-tag:</code>. It never reads or changes your real game keys. Reset demo and Start for real remove only those demo keys.</p>
     <h2>Network requests</h2><p>The game loads its own files from this site. It does not load third-party scripts, fonts, or trackers.</p>
     <h2>Remove your data</h2><p>Clear this site’s storage in your browser settings. You can also reset demo data from the demo banner.</p>
     <h2>Contact</h2><p>For a privacy question, email <a href="mailto:privacy@sociobot.in">privacy@sociobot.in</a>.</p>
@@ -218,6 +218,11 @@ app.addEventListener('click', (event) => {
   const link = (event.target as HTMLElement).closest<HTMLAnchorElement>('a[data-link]');
   if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
   if (link.origin !== location.origin) return;
+  if (link.matches('[data-exit-demo]')) {
+    gameView?.dispose({ preserveState: false });
+    gameView = null;
+    resetDemo();
+  }
   event.preventDefault();
   history.pushState({}, '', link.href);
   window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });

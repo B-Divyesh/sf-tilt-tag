@@ -610,11 +610,13 @@ export class GameView {
     }
   };
 
-  dispose(): void {
+  dispose(options: { preserveState?: boolean } = {}): void {
     this.disposed = true;
     cancelAnimationFrame(this.raf);
-    if (this.state.status === 'ended') saveRun(this.demo, null);
-    else saveRun(this.demo, this.state);
+    if (options.preserveState !== false) {
+      if (this.state.status === 'ended') saveRun(this.demo, null);
+      else saveRun(this.demo, this.state);
+    }
     this.root.removeEventListener('click', this.onClick);
     window.removeEventListener('keydown', this.onKeyDown);
     window.removeEventListener('keyup', this.onKeyUp);

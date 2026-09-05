@@ -155,10 +155,10 @@
   },
   {
     "id": "demo-reset-isolation",
-    "claim": "Demo mode never reads real-game storage, and Reset demo removes only demo data.",
+    "claim": "Demo mode never reads real-game storage; Reset demo and Start for real remove only demo data.",
     "where": "README, demo banner, privacy page, and demo documentation",
     "test": "npx playwright test --grep '@claim:demo-reset-isolation'",
-    "sandbox": "fresh origin storage with distinct real and demo values; assert demo uses sample values, reset removes a demo-only marker, and real values remain"
+    "sandbox": "fresh origin storage with distinct real and demo values; assert demo uses sample values, then verify Reset demo and Start for real each remove the demo namespace while real values remain"
   },
   {
     "id": "no-third-party-resources",
