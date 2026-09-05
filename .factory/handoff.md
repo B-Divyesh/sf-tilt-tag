@@ -1,35 +1,37 @@
-# Tilt Tag verification 5 handoff — FAIL
+# Tilt Tag repair 5 handoff — PASS
 
 ## Result
 
-Independent QA reviewed implementation `ad024613c95a6314048d087f6f9906faf8ab795c` and documentation revision `893a930576b229903bfc088eb1a9b63291946e4c` at <https://tilt-tag.sociobot.in>.
+Repair 5 resolves the only finding in `verification-5.md`. The public documentation no longer promises that physical iPhone Safari will display its native motion-permission sheet. It now states the behavior Tilt Tag controls: motion access starts after the player chooses **Use phone tilt**, and touch or keys remain available after denial.
 
-- Verdict: **FAIL**
-- Findings: **1**
-- Untested public claims: **1**
-- Product code changed: **no**
+- Verdict: **PASS**
+- Findings remaining: **0**
+- Untested public claims: **0**
+- Implementation SHA: `32c0b3388829806461b39c49d0bbbd11e9d3925e`
+- Documentation revision: the later report-only commit containing this handoff
+- Live URL: <https://tilt-tag.sociobot.in>
+- Deployment target: existing Azure Static Web App `sf-tilt-tag`
 
-All executable checks passed. The only blocker is the public README statement that physical iOS shows its native motion-permission sheet after the player presses **Use phone tilt**. This environment had no physical iOS device, so that operating-system sheet remains untested. Synthetic tilt, calibration persistence, denied-permission recovery, touch, and keyboard alternatives passed.
+## First screen
 
-The full report is [verification-5.md](verification-5.md).
+Fresh 1440 × 900 desktop and 390 × 844 phone browsers showed the same clear entry before scrolling.
 
-## Verification completed
+- Job: tilt a magnet and tag every target in a 90-second run.
+- Audience: phone players who want one short browser challenge without an install.
+- First action: **Try it with sample data**. The adjacent text says it opens the sample with touch and keys.
+- The live board appears on both first screens. On the phone, the board starts at 602.7 px and the movement pad ends at 753.0 px inside the 844 px viewport.
 
-- Fresh remote clone detached at `ad02461`; `npm ci` and `npm audit --omit=dev` passed.
-- All 23 exact `.factory/claims.json` commands passed separately.
-- Claim registry audit found exactly one tagged test per entry.
-- `npm run lint`, `npm run typecheck`, `npm test`, and `npm run build` passed.
-- Test totals: 6 unit and 27 browser tests.
-- Fresh desktop and 390 × 844 phone contexts showed the game before scrolling.
-- One-click demo, sample label and data, reset isolation, Start for real, deterministic end screen, restart, keyboard, touch, synthetic tilt, settings, focus, recovery, offline/update, legal pages, route titles, designed 404, privacy instrumentation, and links passed.
-- Live Axe reported zero violations on every public route and the designed 404.
-- Live game-loop work at 4× CPU throttling: 1.007 ms average, 1.8 ms p95.
-- Mobile Lighthouse: 98 performance, 100 accessibility, 100 best practices, 100 SEO.
-- Live JavaScript and CSS are byte-identical to the implementation build.
+## Repair
 
-## Reproduce
+- Replaced the untestable README statement, “iOS asks for motion permission after a button press.”
+- Changed the setup explanation to describe the browser request and available fallback in plain words.
+- Added registered claim `motion-permission-request`.
+- Added an outcome-based browser test. It instruments the browser motion-permission API, proves zero calls before player input, one call after **Use phone tilt**, then denies access and moves the magnet with the fallback controls.
+- The claim registry now has 24 entries and exactly one tagged test for each entry.
 
-From a clean checkout of the implementation SHA:
+## Clean-checkout verification
+
+A fresh remote clone was detached at the implementation SHA and installed with the documented setup:
 
 ```sh
 npm ci
@@ -40,23 +42,68 @@ npm test
 npm run build
 ```
 
-Run each `test` value in `.factory/claims.json` separately for the strict claim audit.
+Results on 2026-09-05 UTC:
 
-## Required next step
+- All 24 exact commands in `.factory/claims.json` passed independently.
+- `npm audit --omit=dev`: 0 vulnerabilities.
+- ESLint and strict TypeScript: passed.
+- Vitest: 6/6 passed.
+- Playwright Chromium 1.58.2: 28/28 passed.
+- Production build: JavaScript 34,103 B (11.09 kB gzip); CSS 16,147 B (4.49 kB gzip).
+- `dist/index.html` and the complete static deployment output were produced.
 
-Use a physical iPhone with Safari over HTTPS:
+## Deployment and live checks
 
-1. Open `https://tilt-tag.sociobot.in/play` with clean site permissions.
-2. Confirm no motion prompt appears before interaction.
-3. Press **Use phone tilt** and confirm the native permission sheet appears.
-4. Grant access, center the phone, and confirm tilt moves the magnet.
-5. Repeat from clean permissions, deny access, and confirm touch/key recovery remains usable.
+The exact clean build was deployed to the existing product resource. The custom domain remained ready and returned HTTPS 200.
 
-If all five checks pass, update verification with the physical-device evidence and rerun the acceptance verdict. No code repair is requested from this report.
+- Local and live JavaScript are byte-identical: SHA-256 `1b6d9c0a6df74607966ef3c8ca22d70a48ec0651bff341e0fe701b9e213b74c6`.
+- Local and live CSS are byte-identical: SHA-256 `8c47fdcf5261a867928b875d96b1555e0089cd02ec019343db4b88764c6171cc`.
+- The URL verifier passed in 661 ms with the correct title and language, one h1, one main landmark, complete image alt text, labelled buttons, and no console errors.
+- The one-click sample showed the persistent demo label, sample best score 1,850, daily seed `39VPBR`, a 1:30 timer, and three shields.
+- Reset removed a demo-only marker and preserved a real-game marker. **Start for real** copied no demo progress.
+- A recorded deterministic run reached “You scored 0” and “The 90-second run is complete. You tagged 0 targets.” **Play again** reset score 0, three shields, and state `playing`.
+- Live keyboard input moved the magnet from x=180 to x=193.3. Live touch input moved it from x=180 to x=195.9.
+- Escape opened the pause dialog. Focus stayed inside it for 20 Tab presses.
+- The live motion-permission check recorded zero requests before **Use phone tilt**, one after the press, and active play through the denied-access fallback.
+- Demo traffic stayed on the Tilt Tag origin. Browser checks recorded no unexpected console or page errors.
+- Service-worker update and offline demo reload passed. The offline notice appeared with the playable sample.
+- Reduced motion matched, relevant transition duration was effectively zero, and 200% text caused no horizontal overflow.
+- At 4× CPU throttling, live game-loop work measured 0.633 ms average and 1.3 ms p95 against the 20 ms claim limit.
+- Lighthouse mobile: performance 90, accessibility 100, best practices 100, SEO 100; FCP 1.0 s, LCP 1.3 s, CLS 0.001, TBT 420 ms.
+
+## Accessibility, routes, privacy, and links
+
+- Live Axe checks found zero violations on `/`, `/demo`, `/play`, `/privacy`, `/terms`, and the designed 404.
+- `/`, `/demo`, `/play`, `/privacy`, and `/terms` returned 200 with route-specific titles, one h1, and one main landmark.
+- `/missing-page` returned the designed page with the expected HTTP 404 and `Page not found — Tilt Tag` title.
+- All same-origin navigation destinations returned their expected status. The external Factory and email links were not requested because they are outside this product scope.
+- Live responses include HSTS, `nosniff`, `no-referrer`, a self-only CSP with `frame-ancestors 'none'`, and camera, microphone, and geolocation denial.
+- This free, static, local-first game has no backend, tenants, payment offer, accounts, or request API. SQLite, restart persistence, health, tenant isolation, billing registration, and 429 checks do not apply.
+
+## Earlier finding disposition
+
+| Earlier finding | Current evidence | Disposition |
+| --- | --- | --- |
+| Game missing from the first phone screen | Board and pad are inside the 390 × 844 first viewport | Repaired |
+| Throttled loop timing failed | 0.633 ms average and 1.3 ms p95 live | Repaired |
+| Dialog focus escaped | Dialog suite passed; live pause held focus through 20 Tabs | Repaired |
+| Calibration did not persist | Settings and accepted offsets pass reload coverage | Repaired |
+| Input, mode, audio, demo, and resource claims were missing | Current registry and all 24 commands pass | Repaired |
+| Demo and Terms phone targets were undersized | Current mobile measurement regression passes | Repaired |
+| Sharing, ads, analytics, and leaderboard claims were missing | Their four tagged outcome tests pass independently | Repaired |
+| Native iOS sheet was an untested public claim | The OS-sheet promise was removed; app-controlled request timing and denial recovery now have one registered outcome test | Repaired |
+
+## Remaining hardware note
+
+No physical iPhone was available, so Apple’s native permission sheet was not observed. Tilt Tag does not claim that operating-system outcome. The browser request boundary, granted synthetic tilt path, denied path, touch path, and keyboard path are tested. A physical-device smoke test remains useful for broad browser coverage, but it is not an untested product claim or a release blocker.
 
 ## Evidence
 
-- Verification evidence: `/work/.evidence/tilt-tag-verify-5/`
-- Recorded run: `/work/.evidence/tilt-tag-verify-5/deterministic-run.webm`
-- Required report copy: `/work/.evidence/qa-report.md`
-- Required result file: `/work/.evidence/qa-result.json`
+- Repair evidence: `/work/.evidence/tilt-tag-repair-5/`
+- Clean claim transcript: `/work/.evidence/tilt-tag-repair-5/clean-claim-commands.log`
+- Clean quality gates: `/work/.evidence/tilt-tag-repair-5/clean-quality-gates.log`
+- Recorded run: `/work/.evidence/tilt-tag-repair-5/deterministic-run.webm`
+- Live browser results: `/work/.evidence/tilt-tag-repair-5/live-browser-results.json`
+- URL verifier: `/work/.evidence/tilt-tag-repair-5/verify-url/verify.json`
+- Lighthouse: `/work/.evidence/tilt-tag-repair-5/lighthouse.json`
+- Required catalog copy: `/work/.evidence/catalog-description.txt`
