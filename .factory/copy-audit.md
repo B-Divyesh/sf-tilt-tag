@@ -1,6 +1,6 @@
 # Landing copy audit
 
-Audit date: 2026-09-05. Hyphenated terms count as one word. Navigation labels and button labels are included even when they are not full sentences. Repair 5 changed no landing copy; every line below was rechecked.
+Audit date: 2026-09-05. Hyphenated terms count as one word. Navigation labels and button labels are included even when they are not full sentences. Repair 7 changed no landing copy; every line below was rechecked.
 
 | Copy | Words | Result |
 | --- | ---: | --- |
@@ -52,6 +52,15 @@ Audit date: 2026-09-05. Hyphenated terms count as one word. Navigation labels an
 | Environmental art was generated for this game. | 7 | Pass |
 
 No sentence exceeds 22 words. No copy uses a banned word. The first screen states the job, audience, first action, next result, price, account requirement, and storage behavior.
+
+## State headings checked in repair 7
+
+| State | Heading | Words | Result |
+| --- | --- | ---: | --- |
+| Paused dialog | Run paused | 2 | Pass — names the state directly |
+| HTTP 404 page | Page not found | 3 | Pass — names the error directly |
+
+Both headings make sense in a screen-reader heading list. Neither uses metaphor, mood copy, or a banned word.
 
 ## Terminology
 
