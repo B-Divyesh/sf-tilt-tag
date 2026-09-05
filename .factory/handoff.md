@@ -5,7 +5,7 @@
 **PASS** — the two strict-review findings are repaired and the implementation is live at <https://tilt-tag.sociobot.in>.
 
 - Implementation SHA: `22591cadfc2a59e510e67a98fff11d09c9fc52ac`
-- Report baseline SHA: `PENDING_REPORT_COMMIT`
+- Report baseline SHA: `ddfa8a2319d3d32b7c1b8fd5ea6e84052654d719` (the following metadata-only commit records this SHA)
 - Public claims: 24 registered, 24 commands passed, 0 untested
 - Billing: not applicable; the researched offer is free
 
