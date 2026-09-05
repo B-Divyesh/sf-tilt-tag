@@ -1,10 +1,12 @@
-# Tilt Tag verification 7 handoff
+# Tilt Tag review 2 handoff
 
 ## Result
 
-**PASS** — implementation `b205988b415d70a878f736ece3f29432f114030a` is live at <https://tilt-tag.sociobot.in>. Documentation baseline reviewed: `a4b51362b2bc24114ae207661799a7a6fffba81e`.
+**FAIL** — implementation `b205988b415d70a878f736ece3f29432f114030a` is live at <https://tilt-tag.sociobot.in>. Documentation baseline reviewed: `5f102f2ee0ff3762325350eb605030625092b803`.
 
-The game’s job is “Tilt a magnet. Tag every target.” It is for phone players who want one 90-second challenge without an install. The first action is **Try it with sample data**, which opens a labeled, isolated sample run with touch and keys.
+There are two findings and zero untested public claims. The sound toggle fails the Label in Name check because visible **Sound on/off** text is absent from its accessible **Mute sound/Turn sound on** name. The 404 and paused-dialog headings use metaphor or mood copy instead of naming the state.
+
+No product code was changed during this review.
 
 ## How to verify
 
@@ -19,14 +21,14 @@ npm run build
 npm test
 ```
 
-Run each exact command listed in `.factory/claims.json` as well. Verification 7 ran all 24 independently; all passed. The complete suite passed Vitest 6/6 and Playwright 28/28. The build produced 34.24 kB JavaScript (11.14 kB gzip) and 16.15 kB CSS (4.49 kB gzip).
+Run all 24 exact commands in `.factory/claims.json`. This review passed all 24 separately, plus Vitest 6/6 and Playwright 28/28. The build emitted 34.24 kB JavaScript and 16.15 kB CSS.
 
-Live checks confirmed byte-identical JS and CSS, the first-screen game board on desktop and phone, demo reset and exit isolation, a deterministic result screen and restart, keyboard/touch controls, focus trapping, persistence, offline reload, privacy behavior, and zero serious or critical Axe violations. The public 4× throttled frame-work claim measured 0.977 ms average and 1.600 ms p95 live.
+Live verification covered fresh desktop and phone first screens, demo isolation and exit, a recorded deterministic result and restart, keyboard/focus and motion-unavailable recovery, every route, offline/update, reduced motion, privacy traffic, security headers, live asset hashes, Axe, and Lighthouse. The 4× throttled live game-loop work was 1.282 ms average and 2.0 ms p95.
 
-## Known limits
+## Required repairs
 
-This is a free, static, local-first game. It has no backend, account, payment flow, tenant, SQLite service, health endpoint, or rate limit, so backend checks do not apply.
+1. Make the sound control's accessible name contain its visible **Sound on/off** text while retaining a clear action.
+2. Rename **This target is out of range** to a direct 404 heading and **Take your time** to a direct paused-state heading.
+3. Add regressions for the label-in-name rule and the plain-words heading audit, then rerun the review.
 
-A physical-iPhone motion-permission-sheet smoke test remains a hardware follow-up. It is not a public promise: the public copy avoids OS-sheet wording, and the tested request-timing plus touch/keyboard recovery path passes.
-
-Evidence: `/work/.evidence/tilt-tag-verify-7/` and `.factory/verification-7.md`.
+Evidence: `/work/.evidence/tilt-tag-review-2/` and `.factory/review-2.md`.
