@@ -1,27 +1,28 @@
-# Tilt Tag review 4 handoff
+# Tilt Tag verification 9 handoff
 
 ## Result
 
-**PASS** — the fresh strict review found zero findings and zero untested public claims at <https://tilt-tag.sociobot.in>.
+**PASS** — independent Chromium, Firefox, and WebKit qualification found zero findings and zero untested public claims at <https://tilt-tag.sociobot.in>.
 
 - Implementation SHA: `22591cadfc2a59e510e67a98fff11d09c9fc52ac`
-- Documentation SHA: `b8a22b80d36f3fa820ab4500c3c8a09df629d424`
-- Report: `.factory/review-4.md`
+- Documentation baseline: `07df1b44797cdc515e1d6dd5a805e893b0a79676`
+- Report: `.factory/verification-9.md`
 - Claims: 24 registered; all 24 exact commands passed separately
-- Backend checks: not applicable; this is a static local-first browser game with no API or backend
+- Product code changes: none
 
 ## What was verified
 
-Fresh desktop and phone browsers showed the job, audience, sample action, running board, and movement pad before scrolling. The one-click sample, persistent demo label, sample score, reset, isolated storage, and exit to real mode passed. A deterministic phone run reached the score summary and Play again reset score, shields, and game state.
+Playwright 1.58.2 prerequisites were installed. Chromium 145.0.7632.6, Firefox 146.0.1, and WebKit 26.0 each opened fresh desktop and 390 × 844 phone-sized profiles. Every engine showed the game before scrolling and completed a live standard run through a timer or shield-loss result screen. Keyboard, touch-pointer, tilt simulation, permission denial recovery, Escape pause, dialog focus, audio start, mute persistence, restart, saved-run reload, demo isolation, reduced motion, 200% text, and offline reload passed.
 
-The clean checkout passed install, audit, lint, typecheck, build, Vitest 6/6, and Playwright 30/30. Every command in `.factory/claims.json` passed separately. Live JavaScript and CSS match the implementation build byte for byte.
+The clean checkout passed audit, lint, typecheck, build, Vitest 6/6, and Playwright 30/30. Every claim command passed separately. Eighteen cross-engine Axe route scans found zero serious or critical violations. The supplied URL verifier passed. Mobile Lighthouse scored 96/100/100/100. Live assets match the implementation build byte for byte.
 
-Live checks covered keyboard and touch controls, focus trapping, settings and calibration persistence, reduced motion, text zoom, legal pages, route titles, expected 404, internal links, privacy traffic, service-worker update state, offline reload, and Axe accessibility scans. Evidence is in `/work/.evidence/tilt-tag-review-4/`.
+Evidence is in `/work/.evidence/tilt-tag-verify-9/`, including named run videos, end-screen captures, `cross-browser.json`, `claims.log`, `quality-gates.log`, `lighthouse-mobile.json`, and `asset-hashes.txt`.
 
 ## Run again
 
 ```sh
 npm ci
+npx playwright install --with-deps chromium firefox webkit
 npm audit --omit=dev
 npm run lint
 npm run typecheck
@@ -29,13 +30,8 @@ npm run build
 npm test
 ```
 
-Run each `test` command in `.factory/claims.json` separately. For the live structural check:
-
-```sh
-mkdir -p /work/.evidence/tilt-tag-review-4/verify-url
-/opt/fleet/lib/verify-url.sh https://tilt-tag.sociobot.in /work/.evidence/tilt-tag-review-4/verify-url
-```
+Run every `test` command in `.factory/claims.json` separately. The cross-browser evidence script is `/work/.evidence/tilt-tag-verify-9/live-cross-browser.mjs` in this worker.
 
 ## Remaining work
 
-No product defect or untested public claim remains.
+No product defect or untested public claim remains. A physical phone sensor and native iOS permission sheet were not available, but the product makes no native-sheet promise; synthetic web motion and denial paths passed in all engines. The game is one-player, so multiplayer checks do not apply.
